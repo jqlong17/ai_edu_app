@@ -1,0 +1,16 @@
+/* 教学设计润色应用专用样式 */
+.responsive-layout-container {
+  width: 100%;
+}
+
+/* 确保在Web端时,配置和预览面板有正确的宽度 */
+@media (min-width: 1024px) {
+  .responsive-layout-container > div {
+    display: flex;
+    gap: 1.5rem;
+  }
+  
+  .responsive-layout-container > div > div {
+    width: 50%;
+  }
+} 

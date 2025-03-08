@@ -1,0 +1,49 @@
+/* 首页专用样式,覆盖全局暗色模式设置 */
+:root {
+  --background: #f5f7fb !important;
+  --foreground: #000000 !important;
+}
+
+body {
+  background-color: #f5f7fb !important;
+  color: #000000 !important;
+}
+
+/* 首页特定元素样式 */
+.search-input {
+  background-color: white !important;
+  color: #374151 !important;
+}
+
+.card {
+  background-color: white !important;
+  color: #374151 !important;
+}
+
+.nav-item {
+  color: #374151 !important;
+}
+
+.nav-item.active {
+  background-color: #3b82f6 !important;
+  color: white !important;
+}
+
+/* 确保图标颜色正确 */
+svg {
+  color: inherit;
+}
+
+/* 确保底部导航栏颜色正确 */
+.bottom-nav {
+  background-color: white !important;
+  border-top: 1px solid #e5e7eb !important;
+}
+
+.bottom-nav-item {
+  color: #6b7280 !important;
+}
+
+.bottom-nav-item.active {
+  color: #3b82f6 !important;
+} 

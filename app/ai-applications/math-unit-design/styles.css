@@ -1,0 +1,65 @@
+/* 覆盖全局暗色模式设置 */
+:root {
+  --background: #f5f7fb !important;
+  --foreground: #000000 !important;
+}
+
+body {
+  background-color: #f5f7fb !important;
+  color: #000000 !important;
+}
+
+/* 响应式布局样式 */
+@media (min-width: 1024px) {
+  /* Web端样式 */
+  .config-preview-container {
+    display: flex;
+    gap: 1.5rem;
+  }
+  
+  .config-section,
+  .preview-section {
+    width: 50%;
+  }
+}
+
+@media (max-width: 1023px) {
+  /* 移动端样式 */
+  .config-preview-container {
+    display: block;
+  }
+  
+  .config-section,
+  .preview-section {
+    width: 100%;
+  }
+}
+
+/* 通用样式 */
+.bg-white {
+  background-color: white !important;
+}
+
+.text-gray-700 {
+  color: #374151 !important;
+}
+
+.text-gray-500 {
+  color: #6b7280 !important;
+}
+
+.text-blue-500, .text-blue-600 {
+  color: #3b82f6 !important;
+}
+
+.bg-blue-500 {
+  background-color: #3b82f6 !important;
+}
+
+.bg-gray-50 {
+  background-color: #f9fafb !important;
+}
+
+.border-gray-200 {
+  border-color: #e5e7eb !important;
+} 

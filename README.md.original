@@ -1,0 +1,207 @@
+# AI教学助手应用
+
+这是一个基于Next.js开发的AI教学助手应用，旨在为用户提供智能教学服务、专家咨询和个性化学习体验。
+
+## 项目概述
+
+AI教学助手应用是一个集成了多种AI教育工具和专家资源的平台，主要功能包括：
+
+1. **AI应用中心**：提供50-100个AI教学工具和应用
+2. **问专家**：用户可以与教育专家进行一对一对话咨询
+3. **个人中心**：管理用户个人信息、学习记录和偏好设置
+
+## 技术栈
+
+- **前端框架**：Next.js 14 (App Router)
+- **UI组件库**：Tailwind CSS + Shadcn UI
+- **状态管理**：React Context API / Zustand
+- **认证**：NextAuth.js
+- **数据库**：Prisma + PostgreSQL/MongoDB
+- **部署**：Vercel
+
+## 项目结构
+
+```
+ai_edu_app/
+├── app/                      # Next.js App Router
+│   ├── (auth)/               # 认证相关路由
+│   │   ├── login/            # 登录页面
+│   │   ├── register/         # 注册页面
+│   │   └── ...
+│   ├── ai-applications/      # AI应用页面
+│   │   ├── page.tsx          # AI应用主页
+│   │   ├── [category]/       # 分类页面
+│   │   └── [appId]/          # 应用详情页
+│   ├── ask-expert/           # 问专家页面
+│   │   ├── page.tsx          # 问专家主页
+│   │   └── [expertId]/       # 专家对话页面
+│   ├── profile/              # 个人中心
+│   │   ├── page.tsx          # 个人中心主页
+│   │   ├── settings/         # 设置页面
+│   │   └── history/          # 历史记录页面
+│   ├── api/                  # API路由
+│   ├── layout.tsx            # 根布局
+│   └── page.tsx              # 首页
+├── components/               # 可复用组件
+│   ├── ui/                   # UI基础组件
+│   ├── layout/               # 布局组件
+│   │   ├── navbar.tsx        # 导航栏
+│   │   ├── sidebar.tsx       # 侧边栏
+│   │   └── footer.tsx        # 页脚
+│   ├── ai-app-card.tsx       # AI应用卡片组件
+│   ├── expert-card.tsx       # 专家卡片组件
+│   ├── chat-interface.tsx    # 聊天界面组件
+│   └── ...
+├── lib/                      # 工具函数和库
+│   ├── db.ts                 # 数据库连接
+│   ├── auth.ts               # 认证相关
+│   └── utils.ts              # 通用工具函数
+├── public/                   # 静态资源
+│   ├── images/               # 图片资源
+│   └── icons/                # 图标资源
+├── styles/                   # 全局样式
+│   └── globals.css           # 全局CSS
+├── prisma/                   # Prisma配置
+│   └── schema.prisma         # 数据库模型
+├── types/                    # TypeScript类型定义
+├── middleware.ts             # Next.js中间件
+├── next.config.js            # Next.js配置
+├── tailwind.config.js        # Tailwind配置
+├── tsconfig.json             # TypeScript配置
+├── package.json              # 项目依赖
+└── README.md                 # 项目文档
+```
+
+## 主要功能模块
+
+### 1. AI应用中心
+
+- 应用卡片展示（50-100个应用）
+- 分类筛选
+- 搜索功能
+- 应用详情页
+- 使用记录
+
+### 2. 问专家
+
+- 专家列表展示
+- 专家详情页
+- 实时对话界面
+- 历史对话记录
+- 评分和反馈系统
+
+### 3. 个人中心
+
+- 用户信息管理
+- 学习记录和统计
+- 收藏的应用和专家
+- 账户设置
+- 通知中心
+
+## 数据模型
+
+### 用户(User)
+- id
+- name
+- email
+- password
+- avatar
+- role (学生/教师/管理员)
+- createdAt
+- updatedAt
+
+### AI应用(AIApplication)
+- id
+- name
+- description
+- category
+- icon
+- usageCount
+- createdAt
+- updatedAt
+
+### 专家(Expert)
+- id
+- name
+- title
+- avatar
+- specialties
+- description
+- rating
+- createdAt
+- updatedAt
+
+### 对话(Conversation)
+- id
+- userId
+- expertId
+- status
+- createdAt
+- updatedAt
+
+### 消息(Message)
+- id
+- conversationId
+- senderId
+- content
+- timestamp
+
+## 开发计划
+
+1. **阶段一：基础架构搭建**
+   - 项目初始化和配置
+   - 基础UI组件开发
+   - 路由和布局设计
+
+2. **阶段二：核心功能开发**
+   - AI应用中心实现
+   - 问专家功能开发
+   - 个人中心开发
+
+3. **阶段三：用户体验优化**
+   - UI/UX完善
+   - 性能优化
+   - 响应式设计
+
+4. **阶段四：测试和部署**
+   - 单元测试和集成测试
+   - 部署到生产环境
+   - 监控和日志系统
+
+## 安装和运行
+
+```bash
+# 克隆项目
+git clone https://github.com/yourusername/ai_edu_app.git
+cd ai_edu_app
+
+# 安装依赖
+npm install
+
+# 设置环境变量
+cp .env.example .env.local
+
+# 数据库迁移
+npx prisma migrate dev
+
+# 开发环境运行
+npm run dev
+
+# 构建生产版本
+npm run build
+npm start
+```
+
+## 贡献指南
+
+欢迎贡献代码和提出建议！请遵循以下步骤：
+
+1. Fork项目
+2. 创建功能分支 (`git checkout -b feature/amazing-feature`)
+3. 提交更改 (`git commit -m 'Add some amazing feature'`)
+4. 推送到分支 (`git push origin feature/amazing-feature`)
+5. 创建Pull Request
+
+## 许可证
+
+MIT 
