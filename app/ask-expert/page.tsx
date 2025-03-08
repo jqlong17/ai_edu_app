@@ -1,4 +1,7 @@
+"use client"
+
 import { ExpertCard } from "@/components/expert-card"
+import { AppLayout } from "@/components/layout"
 
 // 模拟专家数据
 const experts = [
@@ -39,12 +42,12 @@ const experts = [
 
 export default function AskExpert() {
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <AppLayout>
       {/* 顶部蓝色渐变区域 */}
-      <div className="bg-gradient-to-r from-blue-100 to-blue-200 p-5 pb-6 rounded-b-3xl">
-        <h1 className="text-2xl font-bold mb-2">AI教学助手</h1>
-        <p className="text-sm text-gray-600">
-          远择专业的教学人助手，开启智能教学之旅
+      <div className="bg-gradient-to-r from-blue-100 to-blue-200 p-5 pb-6">
+        <h1 className="text-2xl font-bold mb-2 md:text-3xl">专家数字人</h1>
+        <p className="text-sm text-gray-600 md:text-base">
+          与教育专家深度合作，复刻思想精髓，24小时在线解答教学疑问
         </p>
       </div>
       
@@ -59,6 +62,6 @@ export default function AskExpert() {
       <div className="text-center text-gray-400 text-sm py-4">
         更多专家入驻中
       </div>
-    </div>
+    </AppLayout>
   )
 } 

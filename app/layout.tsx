@@ -1,29 +1,27 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
+import './globals.css'
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
 import "./home-styles.css";
-import { Navbar } from "@/components/layout/navbar";
+import { Toaster } from 'sonner'
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: "AI教学助手",
-  description: "远择专业的教学人工智能助手，开启智能教学之旅",
-};
+  title: '云小睿 - 智能教学助手',
+  description: '远择专业的教学人助手，开启智能教学之旅',
+}
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <html lang="zh">
+    <html lang="zh-CN">
       <body className={inter.className}>
-        <main className="min-h-screen pb-16">
-          {children}
-        </main>
-        <Navbar />
+        {children}
+        <Toaster position="top-center" />
       </body>
     </html>
-  );
+  )
 }

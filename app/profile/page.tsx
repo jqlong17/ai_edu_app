@@ -1,7 +1,10 @@
+"use client"
+
 import Link from "next/link"
 import { Settings, History, BookmarkIcon, LogOut, User, 
          FileText, MessageSquare, HelpCircle, Bell } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { AppLayout } from "@/components/layout"
 
 // 模拟用户数据
 const user = {
@@ -50,17 +53,17 @@ const menuItems = [
 
 export default function Profile() {
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
+    <AppLayout>
       {/* 顶部蓝色渐变区域 */}
-      <div className="bg-gradient-to-r from-blue-100 to-blue-200 rounded-xl m-2 p-4">
-        <h1 className="text-2xl font-bold mb-2">我的</h1>
+      <div className="bg-gradient-to-r from-blue-100 to-blue-200 p-5 pb-6">
+        <h1 className="text-2xl font-bold mb-2 md:hidden">我的</h1>
         <p className="text-sm text-gray-600">
           个人中心和设置
         </p>
       </div>
       
       {/* 用户信息卡片 */}
-      <div className="bg-white rounded-xl m-2 p-4 flex items-center">
+      <div className="bg-white m-3 rounded-xl p-4 flex items-center">
         <div className="flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 mr-4">
           <User className="h-8 w-8 text-blue-600" />
         </div>
@@ -71,7 +74,7 @@ export default function Profile() {
       </div>
       
       {/* 菜单列表 */}
-      <div className="grid grid-cols-1 gap-3 m-2 mb-16">
+      <div className="grid grid-cols-1 gap-3 m-3">
         {menuItems.map((item) => (
           <Link 
             key={item.href} 
@@ -99,6 +102,6 @@ export default function Profile() {
           </div>
         </button>
       </div>
-    </div>
+    </AppLayout>
   )
 } 

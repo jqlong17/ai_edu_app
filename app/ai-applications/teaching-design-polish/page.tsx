@@ -5,125 +5,280 @@ import Link from "next/link"
 import '../styles.css'
 import './styles.css'
 import ResponsiveLayout from '@/components/layout/ResponsiveLayout'
+import { useState } from 'react'
+
+// 定义润色要求类型
+type PolishRequirement = {
+  id: string
+  name: string
+  prompt: string
+}
+
+// 润色要求数据
+const polishRequirements: PolishRequirement[] = [
+  {
+    id: 'teaching_process',
+    name: '教学环节优化',
+    prompt: '优化教学环节的设计，使其更加合理和高效，确保教学流程的顺畅性和逻辑性。重点关注教学环节的衔接和时间分配。'
+  },
+  {
+    id: 'teaching_activity',
+    name: '教学活动丰富',
+    prompt: '丰富教学活动的形式，增加更多互动性和参与性的环节。融入小组合作、探究学习、游戏化等多样化的教学方法。'
+  },
+  {
+    id: 'teaching_case',
+    name: '教学案例补充',
+    prompt: '补充更多贴近学生生活的实际案例，使教学内容更具体化、形象化，帮助学生更好地理解和掌握知识点。'
+  },
+  {
+    id: 'blackboard_design',
+    name: '板书设计完善',
+    prompt: '完善板书设计，使其更加清晰、有条理，突出重点内容，便于学生理解和记忆。注意板书的层次性和美观性。'
+  },
+  {
+    id: 'teaching_reflection',
+    name: '教学反思建议',
+    prompt: '提供教学反思的建议，包括可能遇到的教学难点、学生反应预测、教学效果评估等方面的思考。'
+  }
+]
 
 // 配置页面组件
 function ConfigTab() {
+  // 选中的润色要求
+  const [selectedRequirements, setSelectedRequirements] = useState<string[]>(['blackboard_design'])
+
+  // 处理润色要求点击
+  const handleRequirementClick = (id: string) => {
+    setSelectedRequirements(prev => {
+      if (prev.includes(id)) {
+        return prev.filter(item => item !== id)
+      } else {
+        return [...prev, id]
+      }
+    })
+  }
+
+  // 获取选中的提示词
+  const getSelectedPrompts = () => {
+    return selectedRequirements
+      .map(id => polishRequirements.find(req => req.id === id)?.prompt)
+      .filter(Boolean)
+      .join('\n')
+  }
+
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">
-      {/* 基本信息模块 */}
+      {/* 输入教学设计模块 */}
       <div className="mb-6">
-        <div className="flex items-center mb-6">
+        <div className="flex items-center mb-4">
           <div className="w-1 h-5 bg-blue-500 rounded-sm mr-2"></div>
-          <h2 className="text-lg font-bold">基本信息</h2>
+          <h2 className="text-lg font-bold">输入教学设计</h2>
         </div>
         
-        {/* 学科 */}
-        <div className="mb-5">
-          <label className="block mb-2">
-            <span className="text-red-500 mr-1">*</span>
-            <span>学科</span>
-          </label>
-          <div className="relative">
-            <select className="w-full p-3 bg-gray-50 rounded-lg border border-gray-200 appearance-none pr-10">
-              <option value="" disabled>请选择学科</option>
-              <option value="math" selected>数学</option>
-              <option value="chinese">语文</option>
-              <option value="english">英语</option>
-              <option value="physics">物理</option>
-              <option value="chemistry">化学</option>
-            </select>
-            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-          </div>
-        </div>
-        
-        {/* 年级 */}
-        <div className="mb-5">
-          <label className="block mb-2">
-            <span className="text-red-500 mr-1">*</span>
-            <span>适用年级</span>
-          </label>
-          <div className="relative">
-            <select className="w-full p-3 bg-gray-50 rounded-lg border border-gray-200 appearance-none pr-10">
-              <option value="" disabled>请选择年级</option>
-              <option value="7" selected>七年级</option>
-              <option value="8">八年级</option>
-              <option value="9">九年级</option>
-              <option value="10">高一</option>
-              <option value="11">高二</option>
-              <option value="12">高三</option>
-            </select>
-            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-          </div>
-        </div>
-        
-        {/* 教学设计文件 */}
-        <div className="mb-5">
-          <label className="block mb-2">
-            <span className="text-red-500 mr-1">*</span>
-            <span>教学设计文件</span>
-          </label>
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50 flex flex-col items-center justify-center text-center">
-            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-3">
-              <Upload className="h-6 w-6 text-blue-500" />
-            </div>
-            <p className="text-sm font-medium mb-1">点击或拖拽上传文件</p>
-            <p className="text-xs text-gray-500 mb-3">支持Word, PDF或文本文件</p>
-            <button className="px-4 py-2 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600 transition-colors">
-              选择文件
+        {/* 上传文件 */}
+        <div className="mb-4">
+          <div className="border border-blue-300 border-dashed rounded-lg p-4 bg-blue-50 flex items-center justify-center">
+            <button className="flex items-center px-4 py-2 text-blue-500 font-medium">
+              <Upload className="h-5 w-5 mr-2" />
+              <span>上传文件</span>
+              <span className="text-gray-400 ml-2">(支持word\TXT格式)</span>
             </button>
           </div>
         </div>
         
-        {/* 润色要点 */}
-        <div className="mb-5">
-          <label className="block mb-2">
-            <span>润色要点</span>
-            <span className="text-xs text-gray-500 ml-1">(选填)</span>
-          </label>
+        {/* 或直接输入 */}
+        <div>
           <textarea
-            className="w-full p-3 bg-gray-50 rounded-lg border border-gray-200 min-h-[120px] text-sm"
-            placeholder="请输入您希望重点润色的地方，如：教学方法更现代化、增加更多的小组活动、与信息技术融合等"
+            className="w-full p-3 bg-white rounded-lg border border-gray-200 min-h-[120px] text-sm"
+            placeholder="或直接输入教学设计内容..."
           ></textarea>
+          <div className="text-right text-gray-400 text-xs mt-1">0/500</div>
+        </div>
+      </div>
+      
+      {/* 补充教学信息模块 */}
+      <div className="mb-6">
+        <div className="flex items-center mb-4">
+          <div className="w-1 h-5 bg-blue-500 rounded-sm mr-2"></div>
+          <h2 className="text-lg font-bold">补充教学信息</h2>
         </div>
         
-        {/* 润色程度 */}
+        {/* 学科信息 */}
         <div className="mb-5">
-          <label className="block mb-2">
-            <span>润色程度</span>
+          <label className="block mb-2 text-gray-700">
+            学科信息
           </label>
-          <div className="flex items-center space-x-6">
-            <label className="flex items-center">
-              <div className="relative w-5 h-5 mr-2">
-                <input type="radio" name="polish_level" className="opacity-0 absolute w-full h-full" />
-                <div className="border border-gray-300 rounded-full w-full h-full flex items-center justify-center">
-                </div>
+          <div className="grid grid-cols-3 gap-3">
+            <input
+              type="text"
+              className="p-3 bg-gray-50 rounded-lg border border-gray-200 w-full"
+              placeholder="学科"
+            />
+            <input
+              type="text"
+              className="p-3 bg-gray-50 rounded-lg border border-gray-200 w-full"
+              defaultValue="七年级"
+            />
+            <input
+              type="text"
+              className="p-3 bg-gray-50 rounded-lg border border-gray-200 w-full"
+              placeholder="单元"
+            />
+          </div>
+        </div>
+        
+        {/* 课程信息 */}
+        <div className="mb-5">
+          <label className="block mb-2 text-gray-700">
+            课程信息
+          </label>
+          <div className="grid grid-cols-3 gap-3">
+            <input
+              type="text"
+              className="p-3 bg-gray-50 rounded-lg border border-gray-200 w-full"
+              placeholder="教材版本"
+            />
+            <input
+              type="text"
+              className="p-3 bg-gray-50 rounded-lg border border-gray-200 w-full"
+              placeholder="课时"
+            />
+            <div className="relative">
+              <select className="w-full p-3 bg-gray-50 rounded-lg border border-gray-200 appearance-none pr-10" defaultValue="">
+                <option value="" disabled>选择难度 ▼</option>
+                <option value="easy">简单</option>
+                <option value="medium">中等</option>
+                <option value="hard">困难</option>
+              </select>
+              <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+            </div>
+          </div>
+        </div>
+        
+        {/* 教学目标 */}
+        <div className="mb-5">
+          <label className="block mb-2 text-gray-700">
+            教学目标
+          </label>
+          <div className="space-y-3">
+            <div>
+              <div className="p-3 bg-gray-50 rounded-t-lg border border-gray-200 border-b-0">
+                <span className="text-gray-700">知识目标</span>
               </div>
-              <span>轻度润色</span>
-            </label>
-            <label className="flex items-center">
-              <div className="relative w-5 h-5 mr-2">
-                <input type="radio" name="polish_level" className="opacity-0 absolute w-full h-full" defaultChecked />
-                <div className="border border-gray-300 rounded-full w-full h-full flex items-center justify-center">
-                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                </div>
+              <textarea
+                className="w-full p-3 bg-white rounded-b-lg border border-gray-200 min-h-[120px] text-sm"
+                placeholder="请输入..."
+              ></textarea>
+            </div>
+            <div>
+              <div className="p-3 bg-gray-50 rounded-t-lg border border-gray-200 border-b-0">
+                <span className="text-gray-700">能力目标</span>
               </div>
-              <span>中度润色</span>
-            </label>
-            <label className="flex items-center">
-              <div className="relative w-5 h-5 mr-2">
-                <input type="radio" name="polish_level" className="opacity-0 absolute w-full h-full" />
-                <div className="border border-gray-300 rounded-full w-full h-full flex items-center justify-center">
-                </div>
+              <textarea
+                className="w-full p-3 bg-white rounded-b-lg border border-gray-200 min-h-[120px] text-sm"
+                placeholder="请输入..."
+              ></textarea>
+            </div>
+            <div>
+              <div className="p-3 bg-gray-50 rounded-t-lg border border-gray-200 border-b-0">
+                <span className="text-gray-700">素养目标</span>
               </div>
-              <span>深度润色</span>
-            </label>
+              <textarea
+                className="w-full p-3 bg-white rounded-b-lg border border-gray-200 min-h-[120px] text-sm"
+                placeholder="请输入..."
+              ></textarea>
+            </div>
+          </div>
+        </div>
+        
+        {/* 学情分析 */}
+        <div className="mb-5">
+          <label className="block mb-2 text-gray-700">
+            学情分析
+          </label>
+          <div className="space-y-3">
+            <div>
+              <div className="p-3 bg-gray-50 rounded-t-lg border border-gray-200 border-b-0">
+                <span className="text-gray-700">班级特点</span>
+              </div>
+              <textarea
+                className="w-full p-3 bg-white rounded-b-lg border border-gray-200 min-h-[120px] text-sm"
+                placeholder="请输入..."
+              ></textarea>
+            </div>
+            <div>
+              <div className="p-3 bg-gray-50 rounded-t-lg border border-gray-200 border-b-0">
+                <span className="text-gray-700">学生基础</span>
+              </div>
+              <textarea
+                className="w-full p-3 bg-white rounded-b-lg border border-gray-200 min-h-[120px] text-sm"
+                placeholder="请输入..."
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        {/* 教学重难点 */}
+        <div className="mb-5">
+          <label className="block mb-2 text-gray-700">
+            教学重难点
+          </label>
+          <div className="space-y-3">
+            <div>
+              <div className="p-3 bg-gray-50 rounded-t-lg border border-gray-200 border-b-0">
+                <span className="text-gray-700">重点内容</span>
+              </div>
+              <textarea
+                className="w-full p-3 bg-white rounded-b-lg border border-gray-200 min-h-[120px] text-sm"
+                placeholder="请输入..."
+              ></textarea>
+            </div>
+            <div>
+              <div className="p-3 bg-gray-50 rounded-t-lg border border-gray-200 border-b-0">
+                <span className="text-gray-700">难点内容</span>
+              </div>
+              <textarea
+                className="w-full p-3 bg-white rounded-b-lg border border-gray-200 min-h-[120px] text-sm"
+                placeholder="请输入..."
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        {/* AI润色要求 */}
+        <div className="mb-5">
+          <div className="flex items-center mb-4">
+            <div className="w-1 h-5 bg-blue-500 rounded-sm mr-2"></div>
+            <h2 className="text-lg font-bold">AI润色要求</h2>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+            {polishRequirements.map(requirement => (
+              <button
+                key={requirement.id}
+                onClick={() => handleRequirementClick(requirement.id)}
+                className={`p-2 rounded-lg border ${
+                  selectedRequirements.includes(requirement.id)
+                    ? 'border-blue-200 bg-blue-50 text-blue-500'
+                    : 'border-gray-200 text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                {requirement.name}
+              </button>
+            ))}
           </div>
         </div>
       </div>
       
       {/* 按钮区域 */}
       <div className="flex justify-center mt-6">
-        <button className="px-8 py-2.5 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors">
+        <button 
+          className="w-full max-w-md p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-base font-medium"
+          onClick={() => {
+            const prompts = getSelectedPrompts()
+            console.log('Selected prompts:', prompts) // 这里可以处理提示词
+          }}
+        >
           开始润色
         </button>
       </div>

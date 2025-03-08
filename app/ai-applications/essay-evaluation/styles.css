@@ -1,0 +1,22 @@
+/* 上传区域悬停效果 */
+.upload-area:hover {
+  border-color: #3b82f6;
+  background-color: #f8fafc;
+}
+
+/* 单选框自定义样式 */
+.radio-input:checked + .radio-circle {
+  border-color: #3b82f6;
+}
+
+.radio-input:checked + .radio-circle::after {
+  content: '';
+  width: 12px;
+  height: 12px;
+  background-color: #3b82f6;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+} 
