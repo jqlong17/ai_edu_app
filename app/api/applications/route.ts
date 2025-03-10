@@ -14,12 +14,8 @@ export type AIApplication = {
   enabled: boolean
 }
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    // 获取查询参数
-    const { searchParams } = new URL(request.url)
-    const category = searchParams.get('category') || '全部'
-    
     // 读取CSV文件
     const filePath = path.join(process.cwd(), 'app/data/ai-applications.csv')
     const fileContent = fs.readFileSync(filePath, 'utf-8')
@@ -42,13 +38,8 @@ export async function GET(request: Request) {
       path: record.path,
       enabled: record.enabled.toLowerCase() === 'true'
     }))
-
-    // 根据分类筛选
-    const filteredApps = category === '全部'
-      ? applications
-      : applications.filter(app => app.categories.includes(category))
     
-    return NextResponse.json(filteredApps)
+    return NextResponse.json(applications)
   } catch (error) {
     console.error('Error loading applications:', error)
     return NextResponse.json([], { status: 500 })
