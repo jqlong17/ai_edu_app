@@ -20,7 +20,7 @@ import {
   Lightbulb,
   ChartBar
 } from "lucide-react"
-import type { AIApplication } from '@/app/api/applications/route'
+import type { AIApplication } from '@/app/api/types'
 import { toast } from 'sonner'
 
 interface AIAppCardProps {
