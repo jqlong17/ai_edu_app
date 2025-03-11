@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { LayoutGrid, HelpCircle, User } from "lucide-react"
+import { LayoutGrid, HelpCircle, User, Beaker } from "lucide-react"
 import { usePathname } from "next/navigation"
 
 interface LayoutProps {
@@ -16,6 +16,11 @@ const navItems = [
     path: "/ask-expert",
     icon: HelpCircle,
     label: "问专家"
+  },
+  {
+    path: "/ai-lab",
+    icon: Beaker,
+    label: "AI实验室"
   },
   {
     path: "/profile",
