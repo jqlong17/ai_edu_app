@@ -1,9 +1,3 @@
-"use client"
-
-import { useEffect, useState, useRef } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { ArrowLeft, Send, Mic, MicOff, StopCircle } from "lucide-react"
 import { Metadata } from 'next'
 import ExpertChatClient from './client'
 
