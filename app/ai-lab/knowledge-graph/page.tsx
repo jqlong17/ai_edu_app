@@ -3,7 +3,7 @@
 import { AppLayout } from "@/components/layout"
 import { Database, ArrowLeft, Upload, Search, ZoomIn, ZoomOut, Download, RefreshCw } from "lucide-react"
 import Link from "next/link"
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 
 export default function KnowledgeGraph() {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
@@ -11,7 +11,25 @@ export default function KnowledgeGraph() {
   const [graphGenerated, setGraphGenerated] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [zoomLevel, setZoomLevel] = useState(100)
+  const [windowWidth, setWindowWidth] = useState(800)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth)
+    }
+    
+    // 初始化窗口宽度
+    setWindowWidth(window.innerWidth)
+    
+    // 添加resize事件监听
+    window.addEventListener('resize', handleResize)
+    
+    // 清理函数
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
   
   // 修改状态变量名称和默认值
   const [knowledgeInput, setKnowledgeInput] = useState("函数")
@@ -160,12 +178,12 @@ export default function KnowledgeGraph() {
     }, {} as Record<number, number>);
 
     const maxLevel = Math.max(...Object.keys(levelCounts).map(Number));
-    const levelHeight = window.innerWidth < 768 ? 120 : 150;
+    const levelHeight = windowWidth < 768 ? 120 : 150;
     const y = 80 + point.level * levelHeight;
 
     const pointsAtLevel = functionKnowledgePoints.filter(p => p.level === point.level);
     const indexAtLevel = pointsAtLevel.findIndex(p => p.id === point.id);
-    const levelWidth = window.innerWidth < 768 ? window.innerWidth - 40 : 800;
+    const levelWidth = windowWidth < 768 ? windowWidth - 40 : 800;
     const spacing = levelWidth / (pointsAtLevel.length + 1);
     const x = spacing * (indexAtLevel + 1);
 
@@ -331,14 +349,14 @@ export default function KnowledgeGraph() {
                           <circle
                             cx={position.x}
                             cy={position.y}
-                            r={window.innerWidth < 768 ? 40 : 50}
+                            r={windowWidth < 768 ? 40 : 50}
                             fill={getCategoryColor(point.category)}
                             opacity="0.1"
                           />
                           <circle
                             cx={position.x}
                             cy={position.y}
-                            r={window.innerWidth < 768 ? 40 : 50}
+                            r={windowWidth < 768 ? 40 : 50}
                             fill="none"
                             stroke={getCategoryColor(point.category)}
                             strokeWidth="2"
