@@ -1,7 +1,7 @@
 "use client"
 
 import { AppLayout } from "@/components/layout"
-import { Beaker, Sparkles, Brain, Zap, Lightbulb } from "lucide-react"
+import { Beaker, Video, Bot, Database, Brain } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 
@@ -9,35 +9,35 @@ import { useState } from "react"
 const labProjects = [
   {
     id: "1",
-    name: "智能文本生成",
-    description: "基于大型语言模型的智能文本生成工具，可用于创建教案、课件和教学材料",
-    icon: Sparkles,
+    name: "课堂观察",
+    description: "基于对课堂视频、音频识别的AI智能分析，提供个性化的教学建议和改进方向",
+    icon: Video,
     status: "beta",
-    path: "/ai-lab/text-generation"
+    path: "/ai-lab/classroom-observation"
   },
   {
     id: "2",
-    name: "知识图谱构建",
-    description: "自动从教材和课程内容中提取知识点，构建学科知识图谱",
-    icon: Brain,
+    name: "Agent助手",
+    description: "可在后台自动执行长时间任务，提高老师工作效率，支持批量处理和自动化工作流",
+    icon: Bot,
     status: "alpha",
-    path: "/ai-lab/knowledge-graph"
+    path: "/ai-lab/agent"
   },
   {
     id: "3",
-    name: "智能教学助手",
-    description: "基于AI的实时教学辅助工具，可以在课堂上提供即时支持和资源推荐",
-    icon: Zap,
-    status: "coming",
-    path: "/ai-lab/teaching-assistant"
+    name: "知识图谱构建",
+    description: "自动从教材和课程内容中提取知识点，构建学科知识图谱，帮助教师理解知识结构",
+    icon: Database,
+    status: "beta",
+    path: "/ai-lab/knowledge-graph"
   },
   {
     id: "4",
-    name: "学生学习分析",
-    description: "通过AI分析学生的学习行为和成绩数据，提供个性化的教学建议",
-    icon: Lightbulb,
-    status: "coming",
-    path: "/ai-lab/learning-analytics"
+    name: "思维提取器",
+    description: "AI智能分析文献资料，提取核心思想和方法理念，帮助快速把握文献精髓",
+    icon: Brain,
+    status: "alpha",
+    path: "/ai-lab/thought-extractor"
   }
 ]
 

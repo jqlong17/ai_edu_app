@@ -1,7 +1,7 @@
 "use client"
 
 import { AIAppCard } from "@/components/ai-app-card"
-import { Search, ChevronLeft, ChevronRight } from "lucide-react"
+import { Search, ChevronLeft, ChevronRight, LayoutGrid } from "lucide-react"
 import { useState, useEffect } from 'react'
 import type { AIApplication } from './api/types'
 import { AppLayout } from "@/components/layout"
@@ -60,11 +60,14 @@ export default function Home() {
 
   return (
     <AppLayout>
-      {/* 顶部蓝色渐变区域 */}
+      {/* 顶部渐变区域 */}
       <div className="bg-gradient-to-r from-blue-100 to-blue-200 p-5 pb-6">
-        <h1 className="text-2xl font-bold mb-2 md:hidden">云小睿</h1>
-        <p className="text-sm text-gray-600">
-          远择专业的教学人助手，开启智能教学之旅
+        <div className="flex items-center mb-2">
+          <LayoutGrid className="h-6 w-6 mr-2 text-blue-600" />
+          <h1 className="text-2xl font-bold md:text-3xl">AI应用</h1>
+        </div>
+        <p className="text-sm text-gray-600 md:text-base">
+          选择专业的教学助手，开启智能教学之旅
         </p>
         
         {/* 搜索框 */}

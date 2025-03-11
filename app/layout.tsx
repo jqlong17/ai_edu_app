@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: '云小睿 - 智能教学助手',
-  description: '远择专业的教学人助手，开启智能教学之旅',
+  description: '选择专业的教学助手，开启智能教学之旅',
 }
 
 export default function RootLayout({

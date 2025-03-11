@@ -5,9 +5,56 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Send, Mic, MicOff, StopCircle } from "lucide-react"
 
+// 模拟专家数据
+const expertsData = {
+  "1": {
+    name: "章老师",
+    title: "数学教育专家",
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=math&backgroundColor=b6e3f4",
+    welcomeMessage: "您好，我是章老师。作为一名数学教育专家，我擅长数学思维培养和解题方法创新。请问有什么数学问题需要我帮助吗？",
+    responseTemplates: [
+      "这是一个很好的数学问题。让我们一步步分析：\n1. 首先要理解题目的核心概念\n2. 找出已知条件和未知量\n3. 选择合适的解题方法\n\n",
+      "在解决这类数学问题时，我建议从以下几个角度思考：\n1. 基本概念的理解\n2. 解题思路的构建\n3. 方法的选择\n\n",
+      "数学学习最重要的是理解基本原理。针对您的问题，我们可以这样思考：\n1. 回顾相关知识点\n2. 分析题目特点\n3. 总结解题方法\n\n"
+    ]
+  },
+  "2": {
+    name: "朱老师",
+    title: "德育专家",
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=moral&backgroundColor=ffdfba",
+    welcomeMessage: "您好，我是朱老师。作为德育工作者，我致力于帮助学生健康成长。您有什么想和我交流的吗？",
+    responseTemplates: [
+      "在德育工作中，我们需要注意学生的个体差异。针对这个情况，我的建议是：\n1. 了解学生的成长背景\n2. 建立良好的师生关系\n3. 因材施教\n\n",
+      "培养学生良好品德的关键在于以身作则和循循善诱。具体来说：\n1. 树立正确的价值观\n2. 培养良好的行为习惯\n3. 营造积极的班级氛围\n\n",
+      "处理这类问题时，要特别注意学生的心理感受。我建议：\n1. 倾听学生的想法\n2. 给予适当的引导\n3. 保持耐心和信心\n\n"
+    ]
+  },
+  "3": {
+    name: "韩老师",
+    title: "英语教育专家",
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=english&backgroundColor=d1f4d1",
+    welcomeMessage: "Hello！我是韩老师。很高兴能帮助您提升英语水平。What can I do for you?",
+    responseTemplates: [
+      "在英语学习中，这是一个很常见的困惑。建议您：\n1. 多听英语原声材料\n2. 坚持每日口语练习\n3. 培养英语思维\n\n",
+      "提升英语能力需要多听多说。针对您的问题，我建议：\n1. 制定合理的学习计划\n2. 找到适合的学习方法\n3. 创造语言环境\n\n",
+      "学习英语最重要的是培养语感。让我们从以下几个方面入手：\n1. 模仿地道的表达\n2. 理解文化背景\n3. 多做实践练习\n\n"
+    ]
+  },
+  "4": {
+    name: "李老师",
+    title: "物理教育专家",
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=physics&backgroundColor=f4d1e3",
+    welcomeMessage: "您好，我是李老师。物理学习需要理论结合实践，我很乐意帮您解答物理学习中的疑惑。",
+    responseTemplates: [
+      "物理现象背后都有其科学原理。让我们通过实验现象来理解：\n1. 观察现象\n2. 分析原理\n3. 总结规律\n\n",
+      "解决物理问题的关键是理解基本概念和定律。我们可以这样分析：\n1. 明确已知条件\n2. 寻找适用定律\n3. 建立解题思路\n\n",
+      "在物理学习中，建立正确的思维方式很重要。建议您：\n1. 理解物理概念\n2. 联系生活实际\n3. 多做实验验证\n\n"
+    ]
+  }
+}
+
 // 检查用户是否登录的函数
 const checkIsLoggedIn = () => {
-  // 在客户端检查localStorage中是否有登录状态
   if (typeof window !== 'undefined') {
     return localStorage.getItem('isLoggedIn') === 'true'
   }
@@ -23,52 +70,46 @@ export default function ExpertChatClient({ params }: { params: { expertId: strin
   const [isRecording, setIsRecording] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   
-  // 模拟专家数据
-  const expert = {
-    id: params.expertId,
-    name: "章建跃",
-    title: "数学教育专家",
-    description: "著名数学教育专家，教育部基础教育课程教材专家工作委员会委员",
-    specialties: ["教学设计", "试题解析"],
-    avatar: "/images/expert1.png",
-  }
+  // 获取当前专家数据
+  const expert = expertsData[params.expertId as keyof typeof expertsData]
   
   useEffect(() => {
-    // 检查用户是否已登录
     const loggedIn = checkIsLoggedIn()
     setIsLoggedIn(loggedIn)
     
-    // 如果已登录，添加欢迎消息
-    if (loggedIn) {
+    if (loggedIn && expert) {
       setMessages([
         {
           type: 'expert',
-          content: `您好，我是${expert.name}，${expert.title}。请问有什么可以帮助您的？`
+          content: expert.welcomeMessage
         }
       ])
     }
     
     setIsLoading(false)
     
-    // 如果未登录，跳转到登录页面
     if (!loggedIn) {
       router.push('/login?redirect=' + encodeURIComponent(`/ask-expert/${params.expertId}/chat`))
     }
-  }, [params.expertId, router, expert.name, expert.title])
+  }, [params.expertId, router, expert])
   
-  // 滚动到最新消息
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
   
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault()
-    if (message.trim()) {
+    if (message.trim() && expert) {
       // 添加用户消息
       setMessages(prev => [...prev, { type: 'user', content: message }])
       
       // 清空输入框
       setMessage('')
+      
+      // 随机选择一个回复模板
+      const randomResponse = expert.responseTemplates[
+        Math.floor(Math.random() * expert.responseTemplates.length)
+      ]
       
       // 模拟专家回复
       setTimeout(() => {
@@ -76,7 +117,7 @@ export default function ExpertChatClient({ params }: { params: { expertId: strin
           ...prev, 
           { 
             type: 'expert', 
-            content: `感谢您的提问。关于"${message.trim()}"，我的回答是：这是一个很好的问题。作为数学教育专家，我建议您可以从基础概念开始理解，然后逐步深入。您还有其他问题吗？` 
+            content: randomResponse + `具体到您问的"${message.trim()}"，我的建议是：根据您的描述，我们可以从专业角度来分析和解决这个问题。您觉得这个思路怎么样？`
           }
         ])
       }, 1000)

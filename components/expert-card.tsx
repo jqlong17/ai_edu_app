@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { cn } from "@/lib/utils"
-import { User, GraduationCap, BookOpen, Brain, School } from "lucide-react"
+import { Bot } from "lucide-react"
 
 interface Expert {
   id: string
@@ -19,35 +19,18 @@ interface ExpertCardProps {
 // 获取随机背景色
 function getAvatarBgColor(expertId: string) {
   const colors = [
-    "bg-blue-100", // 蓝色
-    "bg-purple-100", // 紫色
-    "bg-green-100", // 绿色
-    "bg-orange-100", // 橙色
-    "bg-pink-100", // 粉色
-    "bg-cyan-100", // 青色
+    "bg-blue-50 text-blue-500", // 蓝色
+    "bg-purple-50 text-purple-500", // 紫色
+    "bg-green-50 text-green-500", // 绿色
+    "bg-orange-50 text-orange-500", // 橙色
   ];
   
   const colorIndex = parseInt(expertId) % colors.length;
   return colors[colorIndex];
 }
 
-// 获取专家图标
-function getExpertIcon(expertId: string) {
-  const icons = [
-    GraduationCap,
-    BookOpen,
-    Brain,
-    School,
-    User
-  ];
-  
-  const iconIndex = parseInt(expertId) % icons.length;
-  return icons[iconIndex];
-}
-
 export function ExpertCard({ expert, className }: ExpertCardProps) {
-  const ExpertIcon = getExpertIcon(expert.id);
-  const bgColor = getAvatarBgColor(expert.id);
+  const bgColorClass = getAvatarBgColor(expert.id);
   
   return (
     <Link href={`/ask-expert/${expert.id}`}>
@@ -56,8 +39,8 @@ export function ExpertCard({ expert, className }: ExpertCardProps) {
         className
       )}>
         {/* 头像图标 */}
-        <div className={`flex items-center justify-center h-16 w-16 rounded-full ${bgColor} mb-2`}>
-          <ExpertIcon className="h-8 w-8 text-gray-700" />
+        <div className={`flex items-center justify-center h-16 w-16 rounded-full ${bgColorClass} mb-2`}>
+          <Bot className="h-8 w-8" />
         </div>
         
         {/* 姓名 */}
@@ -69,30 +52,15 @@ export function ExpertCard({ expert, className }: ExpertCardProps) {
         </p>
         
         {/* 专长标签 */}
-        <div className="flex flex-wrap gap-2 justify-center mb-2">
+        <div className="flex flex-wrap gap-1.5 justify-center">
           {expert.specialties.map((specialty) => (
             <span 
               key={specialty} 
-              className="text-xs px-2 py-0.5 bg-blue-100 text-blue-600 rounded-full"
+              className="text-xs px-2 py-0.5 bg-blue-50 text-blue-600 rounded-full"
             >
               {specialty}
             </span>
           ))}
-        </div>
-        
-        {/* 底部按钮区域 */}
-        <div className="flex gap-2 mt-1">
-          <span className="text-xs text-blue-500 px-2 py-0.5">
-            教学设计
-          </span>
-          <span className="text-xs text-blue-500 px-2 py-0.5">
-            试题解析
-          </span>
-        </div>
-        <div className="mt-1">
-          <span className="text-xs text-blue-500 px-2 py-0.5">
-            概念讲解
-          </span>
         </div>
       </div>
     </Link>
