@@ -3,7 +3,7 @@
 import { AIAppCard } from "@/components/ai-app-card"
 import { Search, ChevronLeft, ChevronRight } from "lucide-react"
 import { useState, useEffect } from 'react'
-import type { AIApplication } from './api/applications/route'
+import type { AIApplication } from './api/types'
 import { AppLayout } from "@/components/layout"
 
 // 分类标签
