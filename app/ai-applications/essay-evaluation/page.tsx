@@ -29,7 +29,7 @@ function ConfigTab() {
 
   // 获取评价角度数据
   useEffect(() => {
-    fetch('/api/evaluation-aspects')
+    fetch('/api/essay-evaluation/evaluation-aspects')
       .then(res => res.json())
       .then(data => {
         // 确保data是数组

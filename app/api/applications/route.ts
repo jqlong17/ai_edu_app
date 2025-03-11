@@ -1,32 +1,14 @@
 import { NextResponse } from 'next/server'
-import * as fs from 'fs'
 import * as path from 'path'
-import { parse } from 'csv-parse/sync'
-
-export type AIApplication = {
-  id: string
-  name: string
-  title: string
-  description: string
-  categories: string[]
-  icon: string
-  path?: string
-  enabled: boolean
-}
+import { readCsvFile } from '../utils'
+import { AIApplication } from '../types'
 
 export async function GET() {
   try {
     // 读取CSV文件
     const filePath = path.join(process.cwd(), 'app/data/ai-applications.csv')
-    const fileContent = fs.readFileSync(filePath, 'utf-8')
+    const records = await readCsvFile<any>(filePath)
     
-    // 解析CSV数据
-    const records = parse(fileContent, {
-      columns: true,
-      skip_empty_lines: true,
-      trim: true
-    }) as any[]
-
     // 转换数据格式
     const applications: AIApplication[] = records.map(record => ({
       id: String(record.id),

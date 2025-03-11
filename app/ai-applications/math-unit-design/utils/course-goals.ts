@@ -4,7 +4,7 @@ export interface CourseGoal {
 }
 
 const fetchCourseGoals = async (): Promise<CourseGoal[]> => {
-  const response = await fetch('/api/course-goals');
+  const response = await fetch('/api/math-unit-design/course-goals');
   if (!response.ok) {
     throw new Error('Failed to fetch course goals');
   }

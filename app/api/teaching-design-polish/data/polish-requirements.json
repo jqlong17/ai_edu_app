@@ -1,0 +1,27 @@
+[
+  {
+    "id": "teaching_process",
+    "name": "教学环节优化",
+    "description": ""
+  },
+  {
+    "id": "teaching_activity",
+    "name": "教学活动丰富",
+    "description": ""
+  },
+  {
+    "id": "teaching_case",
+    "name": "教学案例补充",
+    "description": ""
+  },
+  {
+    "id": "blackboard_design",
+    "name": "板书设计完善",
+    "description": ""
+  },
+  {
+    "id": "teaching_reflection",
+    "name": "教学反思建议",
+    "description": ""
+  }
+]

@@ -5,7 +5,8 @@ import Link from "next/link"
 import '../styles.css'
 import './styles.css'
 import ResponsiveLayout from '@/components/layout/ResponsiveLayout'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import ReactMarkdown from 'react-markdown'
 
 // 定义润色要求类型
 type PolishRequirement = {
@@ -288,101 +289,36 @@ function ConfigTab() {
 
 // 预览页面组件
 function PreviewTab() {
-  // 模拟已配置的数据
-  const configData = {
-    subject: "数学",
-    grade: "七年级",
-    originalDesign: "七年级数学《一元一次方程》教学设计.docx",
-    polishLevel: "中度润色",
-    polishFocus: "增加现代教学方法，融入更多小组活动"
-  };
+  const [markdownContent, setMarkdownContent] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(false)
+  const [error, setError] = useState<string | null>(null)
+  const [exampleResult, setExampleResult] = useState<string>('')
+
+  // 获取示例结果
+  useEffect(() => {
+    setLoading(true);
+    fetch('/api/teaching-design-polish/example')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch example result');
+        }
+        return response.text();
+      })
+      .then(data => {
+        setExampleResult(data);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Error fetching example result:', error);
+        setError('Failed to load example result. Please try again later.');
+        setLoading(false);
+      });
+  }, []);
   
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">
-      <div className="mb-8">
-        <h1 className="text-xl font-bold mb-6 text-center">
-          教学设计润色结果
-        </h1>
-        
-        <div className="border-t border-b py-4 space-y-3">
-          <div className="flex">
-            <div className="w-24 text-gray-500">学科：</div>
-            <div>{configData.subject}</div>
-          </div>
-          <div className="flex">
-            <div className="w-24 text-gray-500">适用年级：</div>
-            <div>{configData.grade}</div>
-          </div>
-          <div className="flex">
-            <div className="w-24 text-gray-500">原始文件：</div>
-            <div className="flex items-center">
-              <FileText className="h-4 w-4 mr-1 text-gray-400" />
-              <span>{configData.originalDesign}</span>
-            </div>
-          </div>
-          <div className="flex">
-            <div className="w-24 text-gray-500">润色程度：</div>
-            <div>{configData.polishLevel}</div>
-          </div>
-          {configData.polishFocus && (
-            <div className="flex">
-              <div className="w-24 text-gray-500">润色要点：</div>
-              <div>{configData.polishFocus}</div>
-            </div>
-          )}
-        </div>
-      </div>
-      
-      {/* 润色结果对比 */}
-      <div className="mb-8">
-        <div className="flex items-center mb-4">
-          <div className="w-1 h-5 bg-blue-500 rounded-sm mr-2"></div>
-          <h2 className="text-lg font-bold">润色对比</h2>
-        </div>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div className="border rounded-lg p-4">
-            <h3 className="font-medium mb-3 text-gray-700 flex items-center">
-              <span className="bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded mr-2">原始版本</span>
-              教学目标
-            </h3>
-            <div className="text-sm text-gray-600 space-y-2">
-              <p>1. 理解一元一次方程的概念</p>
-              <p>2. 掌握解一元一次方程的方法</p>
-              <p>3. 能够应用一元一次方程解决简单的实际问题</p>
-            </div>
-          </div>
-          
-          <div className="border rounded-lg p-4 bg-blue-50 border-blue-200">
-            <h3 className="font-medium mb-3 text-gray-700 flex items-center">
-              <span className="bg-blue-500 text-white text-xs px-2 py-1 rounded mr-2">润色版本</span>
-              教学目标
-            </h3>
-            <div className="text-sm text-gray-600 space-y-2">
-              <p>1. <span className="text-blue-500 font-medium">深入</span>理解一元一次方程的概念及其在实际生活中的应用意义</p>
-              <p>2. 熟练掌握解一元一次方程的多种方法，<span className="text-blue-500 font-medium">并能灵活选择最优解法</span></p>
-              <p>3. 能够应用一元一次方程解决<span className="text-blue-500 font-medium">多样化的</span>实际问题，<span className="text-blue-500 font-medium">培养数学建模能力</span></p>
-              <p><span className="text-blue-500 font-medium">4. 通过小组合作学习，培养团队协作和交流表达能力</span></p>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div className="mb-6">
-        <div className="flex items-center mb-4">
-          <div className="w-1 h-5 bg-blue-500 rounded-sm mr-2"></div>
-          <h2 className="text-lg font-bold">AI助手分析</h2>
-        </div>
-        
-        <div className="bg-gray-50 rounded-lg p-4 text-sm">
-          <p className="mb-2 text-gray-700">本次润色主要改进了以下几个方面：</p>
-          <ul className="list-disc pl-5 space-y-1 text-gray-600">
-            <li>教学目标更加明确具体，增加了高阶思维能力的培养</li>
-            <li>教学方法更加现代化，融入了小组合作学习等方式</li>
-            <li>增加了与生活实际的联系，提高了学习的实用性</li>
-            <li>完善了教学评价体系，使评价更加全面和客观</li>
-          </ul>
-        </div>
+      <div className="prose max-w-none">
+        <ReactMarkdown>{markdownContent}</ReactMarkdown>
       </div>
       
       {/* 按钮区域 */}

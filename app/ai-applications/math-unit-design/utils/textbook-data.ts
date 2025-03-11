@@ -12,7 +12,8 @@ export type TextbookContent = {
 // 从API获取教材内容数据
 const fetchTextbookData = async (): Promise<TextbookContent[]> => {
   try {
-    const response = await fetch('/api/textbook-content');
+    // 使用新的API路由
+    const response = await fetch('/api/math-unit-design/textbook-content');
     if (!response.ok) {
       throw new Error('Failed to fetch textbook content');
     }
