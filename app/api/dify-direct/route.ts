@@ -33,8 +33,9 @@ export async function POST(request: Request) {
     
     // 返回响应
     return NextResponse.json(data);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('处理Dify API请求时出错:', error);
-    return NextResponse.json({ error: error instanceof Error ? error.message : '未知错误' }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : '未知错误';
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 } 

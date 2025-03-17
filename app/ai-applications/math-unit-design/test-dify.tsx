@@ -60,8 +60,9 @@ export default function TestDify() {
     addLog("开始直接测试Dify API...");
 
     try {
-      const API_URL = 'https://api.dify.ai/v1/chat-messages';
-      const API_KEY = 'app-mYi2lE2iWFScfmjFJRW8Ygaj';
+      // 使用环境变量或默认值
+      const API_URL = process.env.NEXT_PUBLIC_DIFY_API_URL || 'https://api.dify.ai/v1/chat-messages';
+      const API_KEY = process.env.NEXT_PUBLIC_DIFY_API_KEY || 'app-mYi2lE2iWFScfmjFJRW8Ygaj';
       
       // 构建请求参数
       const requestBody = {
@@ -118,8 +119,9 @@ export default function TestDify() {
 
     try {
       const CORS_PROXY = 'https://corsproxy.io/?';
-      const API_URL = 'https://api.dify.ai/v1/chat-messages';
-      const API_KEY = 'app-mYi2lE2iWFScfmjFJRW8Ygaj';
+      // 使用环境变量或默认值
+      const API_URL = process.env.NEXT_PUBLIC_DIFY_API_URL || 'https://api.dify.ai/v1/chat-messages';
+      const API_KEY = process.env.NEXT_PUBLIC_DIFY_API_KEY || 'app-mYi2lE2iWFScfmjFJRW8Ygaj';
       
       // 构建请求参数
       const requestBody = {
