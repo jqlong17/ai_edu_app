@@ -1,43 +1,55 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { ChevronDown, Plus, Minus } from "lucide-react"
+import { useState, useEffect, useCallback } from "react"
+import { ChevronDown, Plus, Minus, Loader2 } from "lucide-react"
 import { TextbookContent, getTextbookData } from "../utils/textbook-data"
 import { getCourseGoalsByCategory, CourseGoal } from '../utils/course-goals';
+import { useTeachingPlan } from '../utils/teaching-plan-store';
+import { generateTeachingPlan } from '../utils/dify-service';
 
 // 配置页面组件
 export default function ConfigTab() {
+  console.log("ConfigTab 渲染");
+  
+  // 使用教学方案状态
+  const {
+    input,
+    updateInput,
+    setResult,
+    isLoading,
+    setIsLoading,
+    setIsGenerated
+  } = useTeachingPlan();
+
   // 基本信息状态
-  const [grade, setGrade] = useState<number | ''>(7);
-  const [semester, setSemester] = useState<number>(2);
-  const [textbookVersion, setTextbookVersion] = useState<string>("人教版");
+  const [grade, setGrade] = useState<number | ''>(input.grade);
+  const [semester, setSemester] = useState<number>(input.semester);
+  const [textbookVersion, setTextbookVersion] = useState<string>(input.textbookVersion);
   const [textbookData, setTextbookData] = useState<TextbookContent[]>([]);
   
   // 选中的教材内容
-  const [selectedContent, setSelectedContent] = useState<Array<{ chapter: string; section: string }>>([
-    { chapter: "第五章 相交线与平行线", section: "5.1 相交线" },
-    { chapter: "第五章 相交线与平行线", section: "5.2 平行线的性质" }
-  ]);
+  const [selectedContent, setSelectedContent] = useState<Array<{ chapter: string; section: string }>>(
+    input.selectedContent
+  );
 
   // 课时设计状态
-  const [lessonDesigns, setLessonDesigns] = useState<Array<{ content: string }>>([]);
+  const [lessonDesigns, setLessonDesigns] = useState<Array<{ content: string }>>(
+    input.lessonDesigns.length > 0 ? input.lessonDesigns : []
+  );
 
   // 教学内容分析状态
-  const [contentAnalysis, setContentAnalysis] = useState<string>('');
+  const [contentAnalysis, setContentAnalysis] = useState<string>(input.contentAnalysis);
 
-  // 核心问题状态
-  const [coreQuestion, setCoreQuestion] = useState<string>('');
+  // 状态
+  const [coreQuestion, setCoreQuestion] = useState<string>(input.coreQuestion);
 
   // 单元检测作业状态
-  const [unitTest, setUnitTest] = useState<string>('');
+  const [unitTest, setUnitTest] = useState<string>(input.unitTest);
 
   // 课程目标状态
   const [activeTab, setActiveTab] = useState<'核心素养' | '学段目标' | '课程内容' | '学业质量'>('核心素养');
-  const [selectedGoals, setSelectedGoals] = useState<string[]>([
-    '会用数学的眼光观察现实世界',
-    '抽象能力'
-  ]);
-  const [supplementInfo, setSupplementInfo] = useState<string>('');
+  const [selectedGoals, setSelectedGoals] = useState<string[]>(input.selectedGoals);
+  const [supplementInfo, setSupplementInfo] = useState<string>(input.supplementInfo);
 
   // 目标选项数据
   const [goalOptions, setGoalOptions] = useState<{
@@ -70,10 +82,17 @@ export default function ConfigTab() {
   // 当选中的教材内容变化时，更新课时设计
   useEffect(() => {
     // 根据选中的教材内容生成课时设计
-    const newLessonDesigns = selectedContent.map(content => ({
-      content: ''
+    if (selectedContent.length === 0) return;
+    
+    const newLessonDesigns = selectedContent.map((content, index) => ({
+      content: lessonDesigns[index]?.content || ''
     }));
-    setLessonDesigns(newLessonDesigns);
+    
+    // 只有当课时设计数量与内容数量不一致时才更新
+    if (newLessonDesigns.length !== lessonDesigns.length) {
+      console.log("更新课时设计数量", newLessonDesigns.length);
+      setLessonDesigns(newLessonDesigns);
+    }
   }, [selectedContent]);
 
   // 获取课程目标数据
@@ -100,6 +119,46 @@ export default function ConfigTab() {
 
     fetchGoals();
   }, []);
+
+  // 使用useCallback包装更新函数，避免不必要的重新创建
+  const syncToGlobalState = useCallback(() => {
+    console.log("同步状态到全局");
+    updateInput({
+      grade,
+      semester,
+      textbookVersion,
+      selectedContent,
+      selectedGoals,
+      supplementInfo,
+      contentAnalysis,
+      coreQuestion,
+      lessonDesigns,
+      unitTest
+    });
+  }, [
+    grade, 
+    semester, 
+    textbookVersion, 
+    JSON.stringify(selectedContent), 
+    JSON.stringify(selectedGoals), 
+    supplementInfo, 
+    contentAnalysis, 
+    coreQuestion, 
+    JSON.stringify(lessonDesigns), 
+    unitTest,
+    updateInput
+  ]);
+
+  // 使用单独的useEffect来处理状态同步，并添加防抖
+  useEffect(() => {
+    // 使用setTimeout来防抖，避免频繁更新
+    const timer = setTimeout(() => {
+      syncToGlobalState();
+    }, 500);
+    
+    // 清除定时器
+    return () => clearTimeout(timer);
+  }, [syncToGlobalState]);
 
   // 获取可用的年级列表（去重）
   const grades = Array.from(new Set(textbookData.map(item => item.grade))).sort((a, b) => a - b);
@@ -164,7 +223,7 @@ export default function ConfigTab() {
     setContentAnalysis(e.target.value);
   };
 
-  // 处理核心问题变更
+  // 处理重难点变更
   const handleCoreQuestionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setCoreQuestion(e.target.value);
   };
@@ -193,6 +252,37 @@ export default function ConfigTab() {
     const value = e.target.value;
     if (value.length <= 500) {
       setSupplementInfo(value);
+    }
+  };
+
+  // 生成教学方案
+  const handleGenerateTeachingPlan = async () => {
+    try {
+      console.log("开始生成教学方案");
+      setIsLoading(true);
+      
+      // 调用Dify API生成教学方案
+      const result = await generateTeachingPlan({
+        grade,
+        semester,
+        subject: '数学',
+        textbookVersion,
+        selectedContent,
+        selectedGoals,
+        supplementInfo,
+        contentAnalysis,
+        coreQuestion,
+        lessonDesigns,
+        unitTest
+      });
+      
+      // 更新结果
+      setResult(result);
+      setIsGenerated(true);
+    } catch (error) {
+      console.error('生成教学方案失败:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -490,11 +580,11 @@ export default function ConfigTab() {
         </button>
       </div>
 
-      {/* 核心问题 */}
+      {/* 重难点分析 */}
       <div className="mb-6">
         <div className="flex items-center mb-6">
           <div className="w-1 h-5 bg-blue-500 rounded-sm mr-2"></div>
-          <h2 className="text-lg font-bold">核心问题</h2>
+          <h2 className="text-lg font-bold">重难点分析</h2>
         </div>
         <div className="mb-4">
           <textarea
@@ -583,8 +673,23 @@ export default function ConfigTab() {
 
       {/* 生成按钮 */}
       <div className="flex justify-center mt-8">
-        <button className="px-12 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-lg font-medium shadow-sm">
-          生成教学方案
+        <button 
+          className={`px-12 py-3 ${
+            isLoading 
+              ? 'bg-blue-300 cursor-not-allowed' 
+              : 'bg-blue-500 hover:bg-blue-600'
+          } text-white rounded-lg transition-colors text-lg font-medium shadow-sm flex items-center justify-center`}
+          onClick={handleGenerateTeachingPlan}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="animate-spin h-5 w-5 mr-2" />
+              生成中...
+            </>
+          ) : (
+            '生成教学方案'
+          )}
         </button>
       </div>
     </div>
