@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "NODE_ENV=production next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/ && cp .next/standalone/server.js .next/standalone/index.js && echo '#!/usr/bin/env node\nprocess.env.NODE_ENV = \"production\";\nprocess.env.PORT = process.env.PORT || 3000;' | cat - .next/standalone/index.js > temp && mv temp .next/standalone/index.js && chmod +x .next/standalone/index.js",
-    "start": "node .next/standalone/index.js",
+    "build": "next build",
+    "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
