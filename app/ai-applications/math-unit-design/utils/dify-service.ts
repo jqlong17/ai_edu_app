@@ -29,6 +29,7 @@ export interface TeachingPlanResult {
   success: boolean;
   error?: string;
   rawAnswer?: string;
+  method?: 'direct' | 'cors-proxy' | 'mock' | 'none';
 }
 
 // 生成教学方案
@@ -152,16 +153,21 @@ ${input.unitTest ? `单元检测：${input.unitTest}` : ''}
       user: "math-unit-design-user"
     };
 
-    console.log('开始生成教学方案，输入参数:', input);
-    console.log('发送请求到API路由，请求参数:', JSON.stringify(requestBody, null, 2));
+    console.log('===== 教学方案生成 - 启动 =====');
+    console.log('输入参数:', input);
+    console.log('请求参数构建完成, API请求体大小:', JSON.stringify(requestBody).length, '字节');
 
     // 尝试三种不同的方法发送请求
     let response;
     let data;
+    let method: 'direct' | 'cors-proxy' | 'mock' = 'mock'; // 默认为mock
     
     try {
       // 方法1：尝试直接调用 Dify API
-      console.log('尝试直接调用 Dify API:', API_URL);
+      console.log('===== 方法1：直接调用 Dify API =====');
+      console.log('API URL:', API_URL);
+      console.log('API KEY 前5位:', API_KEY.substring(0, 5) + '...');
+      
       const startTime = Date.now();
       response = await fetch(API_URL, {
         method: 'POST',
@@ -172,21 +178,38 @@ ${input.unitTest ? `单元检测：${input.unitTest}` : ''}
         body: JSON.stringify(requestBody)
       });
       const endTime = Date.now();
-      console.log(`API响应时间: ${endTime - startTime}ms`);
-      console.log('API响应状态:', response.status, response.statusText);
+      const responseTime = endTime - startTime;
+      
+      console.log(`方法1响应时间: ${responseTime}ms`);
+      console.log('方法1响应状态:', response.status, response.statusText);
       
       if (!response.ok) {
-        throw new Error(`直接调用 Dify API 失败: ${response.status}`);
+        // 记录详细错误信息
+        const errorText = await response.text();
+        console.error('方法1直接调用失败 - 错误详情:', {
+          status: response.status,
+          statusText: response.statusText,
+          headers: Object.fromEntries(response.headers.entries()),
+          body: errorText.substring(0, 500) + (errorText.length > 500 ? '...(截断)' : '')
+        });
+        throw new Error(`方法1直接调用 Dify API 失败: ${response.status} - ${errorText.substring(0, 100)}`);
       }
       
       data = await response.json();
+      method = 'direct';
+      console.log('方法1直接调用成功!');
     } catch (directError) {
-      console.error('直接调用 Dify API 失败:', directError);
+      console.error('方法1失败详情:', directError instanceof Error ? directError.message : '未知错误');
+      if (directError instanceof Error && directError.stack) {
+        console.error('方法1错误堆栈:', directError.stack);
+      }
       
       try {
         // 方法2：尝试通过 CORS 代理调用 Dify API
-        console.log('尝试通过 CORS 代理调用 Dify API');
+        console.log('===== 方法2：通过 CORS 代理调用 Dify API =====');
         const proxyUrl = `${CORS_PROXY}${encodeURIComponent(API_URL)}`;
+        console.log('CORS代理URL:', proxyUrl);
+        
         const startTime = Date.now();
         response = await fetch(proxyUrl, {
           method: 'POST',
@@ -197,19 +220,36 @@ ${input.unitTest ? `单元检测：${input.unitTest}` : ''}
           body: JSON.stringify(requestBody)
         });
         const endTime = Date.now();
-        console.log(`CORS代理响应时间: ${endTime - startTime}ms`);
-        console.log('CORS代理响应状态:', response.status, response.statusText);
+        const responseTime = endTime - startTime;
+        
+        console.log(`方法2响应时间: ${responseTime}ms`);
+        console.log('方法2响应状态:', response.status, response.statusText);
         
         if (!response.ok) {
-          throw new Error(`通过 CORS 代理调用 Dify API 失败: ${response.status}`);
+          // 记录详细错误信息
+          const errorText = await response.text();
+          console.error('方法2 CORS代理调用失败 - 错误详情:', {
+            status: response.status,
+            statusText: response.statusText,
+            headers: Object.fromEntries(response.headers.entries()),
+            body: errorText.substring(0, 500) + (errorText.length > 500 ? '...(截断)' : '')
+          });
+          throw new Error(`方法2 CORS代理调用 Dify API 失败: ${response.status} - ${errorText.substring(0, 100)}`);
         }
         
         data = await response.json();
+        method = 'cors-proxy';
+        console.log('方法2 CORS代理调用成功!');
       } catch (corsError) {
-        console.error('通过 CORS 代理调用 Dify API 失败:', corsError);
+        console.error('方法2失败详情:', corsError instanceof Error ? corsError.message : '未知错误');
+        if (corsError instanceof Error && corsError.stack) {
+          console.error('方法2错误堆栈:', corsError.stack);
+        }
         
         // 方法3：使用模拟数据（作为最后的备选方案）
-        console.log('使用模拟数据');
+        console.log('===== 方法3：使用模拟数据 =====');
+        console.log('前两种方法均失败，使用本地模拟数据');
+        method = 'mock';
         data = {
           answer: `# 教学方案：七年级数学 - 三角形的概念
 
@@ -335,12 +375,16 @@ ${input.unitTest ? `单元检测：${input.unitTest}` : ''}
 3. 用尺子画一个三角形，标出它的所有顶点、边和角。
 
 4. 实际应用题：
-   在桥梁设计中，为什么常常使用三角形结构？请结合三角形的特性解释。`
+   在桥梁设计中，为什么常常使用三角形结构？请结合三角形的特性解释。
+
+【备注：此为模拟数据，因两种API请求方法均失败，使用预设的本地数据】`
         };
+        console.log('方法3模拟数据准备完成');
       }
     }
 
-    console.log('API响应数据:', JSON.stringify(data, null, 2));
+    console.log(`===== 最终使用方法: ${method} =====`);
+    console.log('数据获取成功, 响应数据大小:', JSON.stringify(data).length, '字节');
     
     // 解析返回的结果 - 直接使用Dify返回的完整内容
     const result = {
@@ -350,13 +394,20 @@ ${input.unitTest ? `单元检测：${input.unitTest}` : ''}
       teachingProcess: '',
       unitTest: '',
       success: true,
-      rawAnswer: data.answer || ''  // 保存原始回答
+      rawAnswer: data.answer || '',  // 保存原始回答
+      method: method  // 添加方法标识
     };
     
-    console.log('教学方案生成成功:', JSON.stringify(result, null, 2));
+    console.log('教学方案生成成功! 使用方法:', method);
+    console.log('===== 教学方案生成 - 完成 =====');
     return result;
   } catch (error) {
-    console.error('生成教学方案失败:', error);
+    console.error('===== 教学方案生成 - 失败 =====');
+    console.error('生成教学方案过程中发生了未捕获的错误:', error instanceof Error ? error.message : '未知错误');
+    if (error instanceof Error && error.stack) {
+      console.error('错误堆栈:', error.stack);
+    }
+    console.error('===== 错误详情 =====');
     
     // 如果API调用失败，返回错误
     return {
@@ -367,7 +418,8 @@ ${input.unitTest ? `单元检测：${input.unitTest}` : ''}
       unitTest: '',
       success: false,
       error: error instanceof Error ? error.message : '未知错误',
-      rawAnswer: ''
+      rawAnswer: '',
+      method: 'none' // 表示所有方法都失败
     };
   }
 } 
