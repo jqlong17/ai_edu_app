@@ -116,13 +116,13 @@ export default function PreviewTab() {
               ),
               // 自定义列表样式
               ul: ({node, ...props}) => (
-                <ul className="list-disc list-inside space-y-2 my-4" {...props} />
+                <ul className="list-disc pl-6 space-y-2 my-4" {...props} />
               ),
               ol: ({node, ...props}) => (
-                <ol className="list-decimal list-inside space-y-2 my-4" {...props} />
+                <ol className="list-decimal pl-6 space-y-2 my-4" {...props} />
               ),
               li: ({node, ...props}) => (
-                <li className="text-gray-700 leading-7" {...props} />
+                <li className="text-gray-700 leading-7 pl-1" {...props} />
               ),
               // 自定义强调样式
               strong: ({node, ...props}) => (
@@ -150,6 +150,30 @@ export default function PreviewTab() {
               // 自定义分隔线样式
               hr: ({node, ...props}) => (
                 <hr className="my-8 border-t border-gray-200" {...props} />
+              ),
+              // 自定义表格样式
+              table: ({node, ...props}) => (
+                <div className="overflow-x-auto my-6">
+                  <table className="min-w-full border-collapse border border-gray-300" {...props} />
+                </div>
+              ),
+              thead: ({node, ...props}) => (
+                <thead className="bg-gray-100" {...props} />
+              ),
+              tbody: ({node, ...props}) => (
+                <tbody className="divide-y divide-gray-300" {...props} />
+              ),
+              tr: ({className, ...props}) => (
+                <tr 
+                  className={`hover:bg-gray-50 ${className || ''}`} 
+                  {...props}
+                />
+              ),
+              th: ({node, ...props}) => (
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-900" {...props} />
+              ),
+              td: ({node, ...props}) => (
+                <td className="px-4 py-3 text-sm text-gray-700 border-t border-gray-300" {...props} />
               )
             }}
           >
