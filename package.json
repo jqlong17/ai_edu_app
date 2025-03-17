@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "NODE_ENV=production next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/ && cp .next/standalone/server.js .next/standalone/index.js",
+    "build": "NODE_ENV=production next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/ && cp .next/standalone/server.js .next/standalone/index.js && echo '#!/usr/bin/env node' | cat - .next/standalone/index.js > temp && mv temp .next/standalone/index.js && chmod +x .next/standalone/index.js",
     "start": "node .next/standalone/index.js",
     "lint": "next lint"
   },
