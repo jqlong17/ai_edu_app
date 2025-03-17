@@ -4,10 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/preprocess-data.js && next build",
+    "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "preprocess": "node scripts/preprocess-data.js"
+    "lint": "next lint"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.1.2",
