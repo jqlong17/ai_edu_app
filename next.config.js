@@ -60,6 +60,21 @@ const nextConfig = {
   // 静态页面优化
   staticPageGenerationTimeout: 120,
   pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
+  // 添加基础路径配置
+  basePath: '',
+  // 确保服务器正确处理路由
+  trailingSlash: false,
+  // 添加重写规则
+  async rewrites() {
+    return {
+      beforeFiles: [
+        {
+          source: '/',
+          destination: '/ai-applications/math-unit-design',
+        },
+      ],
+    }
+  },
 }
 
 module.exports = nextConfig 
