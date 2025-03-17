@@ -1,10 +1,9 @@
 // Dify API服务
 // 用于与Dify API通信，生成教学方案
 
-// 直接使用 Dify API 或通过 CORS 代理
+// 直接使用 Dify API
 const API_URL = process.env.NEXT_PUBLIC_DIFY_API_URL || 'https://api.dify.ai/v1/chat-messages';
 const API_KEY = process.env.NEXT_PUBLIC_DIFY_API_KEY || 'app-mYi2lE2iWFScfmjFJRW8Ygaj';
-const CORS_PROXY = 'https://corsproxy.io/?';
 
 export interface TeachingPlanInput {
   grade: number | '';
@@ -29,7 +28,7 @@ export interface TeachingPlanResult {
   success: boolean;
   error?: string;
   rawAnswer?: string;
-  method?: 'direct' | 'cors-proxy' | 'mock' | 'none';
+  method?: 'direct' | 'none';
 }
 
 // 生成教学方案
@@ -157,245 +156,52 @@ ${input.unitTest ? `单元检测：${input.unitTest}` : ''}
     console.log('输入参数:', input);
     console.log('请求参数构建完成, API请求体大小:', JSON.stringify(requestBody).length, '字节');
 
-    // 尝试三种不同的方法发送请求
+    // 直接调用 Dify API
     let response;
     let data;
-    let method: 'direct' | 'cors-proxy' | 'mock' = 'mock'; // 默认为mock
+    let method: 'direct' | 'none' = 'none';
     
-    try {
-      // 方法1：尝试直接调用 Dify API
-      console.log('===== 方法1：直接调用 Dify API =====');
-      console.log('API URL:', API_URL);
-      console.log('API KEY 前5位:', API_KEY.substring(0, 5) + '...');
-      
-      const startTime = Date.now();
-      response = await fetch(API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${API_KEY}`
-        },
-        body: JSON.stringify(requestBody)
+    // 直接调用 Dify API
+    console.log('===== 直接调用 Dify API =====');
+    console.log('API URL:', API_URL);
+    console.log('API KEY 前5位:', API_KEY.substring(0, 5) + '...');
+    
+    const startTime = Date.now();
+    response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${API_KEY}`
+      },
+      body: JSON.stringify(requestBody)
+    });
+    const endTime = Date.now();
+    const responseTime = endTime - startTime;
+    
+    console.log(`响应时间: ${responseTime}ms`);
+    console.log('响应状态:', response.status, response.statusText);
+    
+    if (!response.ok) {
+      // 记录详细错误信息
+      const errorText = await response.text();
+      console.error('调用失败 - 错误详情:', {
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries()),
+        body: errorText.substring(0, 500) + (errorText.length > 500 ? '...(截断)' : '')
       });
-      const endTime = Date.now();
-      const responseTime = endTime - startTime;
-      
-      console.log(`方法1响应时间: ${responseTime}ms`);
-      console.log('方法1响应状态:', response.status, response.statusText);
-      
-      if (!response.ok) {
-        // 记录详细错误信息
-        const errorText = await response.text();
-        console.error('方法1直接调用失败 - 错误详情:', {
-          status: response.status,
-          statusText: response.statusText,
-          headers: Object.fromEntries(response.headers.entries()),
-          body: errorText.substring(0, 500) + (errorText.length > 500 ? '...(截断)' : '')
-        });
-        throw new Error(`方法1直接调用 Dify API 失败: ${response.status} - ${errorText.substring(0, 100)}`);
-      }
-      
-      data = await response.json();
-      method = 'direct';
-      console.log('方法1直接调用成功!');
-      // 打印Dify API的原始返回结果
-      console.log('===== Dify API 原始返回结果 =====');
-      console.log(JSON.stringify(data, null, 2));
-      console.log('===== Dify API 原始返回结果结束 =====');
-    } catch (directError) {
-      console.error('方法1失败详情:', directError instanceof Error ? directError.message : '未知错误');
-      if (directError instanceof Error && directError.stack) {
-        console.error('方法1错误堆栈:', directError.stack);
-      }
-      
-      try {
-        // 方法2：尝试通过 CORS 代理调用 Dify API
-        console.log('===== 方法2：通过 CORS 代理调用 Dify API =====');
-        const proxyUrl = `${CORS_PROXY}${encodeURIComponent(API_URL)}`;
-        console.log('CORS代理URL:', proxyUrl);
-        
-        const startTime = Date.now();
-        response = await fetch(proxyUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${API_KEY}`
-          },
-          body: JSON.stringify(requestBody)
-        });
-        const endTime = Date.now();
-        const responseTime = endTime - startTime;
-        
-        console.log(`方法2响应时间: ${responseTime}ms`);
-        console.log('方法2响应状态:', response.status, response.statusText);
-        
-        if (!response.ok) {
-          // 记录详细错误信息
-          const errorText = await response.text();
-          console.error('方法2 CORS代理调用失败 - 错误详情:', {
-            status: response.status,
-            statusText: response.statusText,
-            headers: Object.fromEntries(response.headers.entries()),
-            body: errorText.substring(0, 500) + (errorText.length > 500 ? '...(截断)' : '')
-          });
-          throw new Error(`方法2 CORS代理调用 Dify API 失败: ${response.status} - ${errorText.substring(0, 100)}`);
-        }
-        
-        data = await response.json();
-        method = 'cors-proxy';
-        console.log('方法2 CORS代理调用成功!');
-        // 打印Dify API通过CORS代理的原始返回结果
-        console.log('===== Dify API 通过CORS代理的原始返回结果 =====');
-        console.log(JSON.stringify(data, null, 2));
-        console.log('===== Dify API 通过CORS代理的原始返回结果结束 =====');
-      } catch (corsError) {
-        console.error('方法2失败详情:', corsError instanceof Error ? corsError.message : '未知错误');
-        if (corsError instanceof Error && corsError.stack) {
-          console.error('方法2错误堆栈:', corsError.stack);
-        }
-        
-        // 方法3：使用模拟数据（作为最后的备选方案）
-        console.log('===== 方法3：使用模拟数据 =====');
-        console.log('前两种方法均失败，使用本地模拟数据');
-        method = 'mock';
-        data = {
-          answer: `# 教学方案：七年级数学 - 三角形的概念
-
-一、教学目标
-
-1. 知识与技能
-   - 理解三角形的概念
-   - 掌握三角形的基本要素（顶点、边、角）和表示方法
-   - 能够辨认三角形和非三角形
-
-2. 过程与方法
-   - 通过操作、观察、分析，探索三角形的概念和特征
-   - 培养空间想象能力和逻辑思维能力
-
-3. 情感态度与价值观
-   - 激发学习几何的兴趣
-   - 体验数学来源于生活并应用于生活
-
-二、教学重难点
-
-1. 重点
-   - 三角形的概念
-   - 三角形的基本要素及表示方法
-
-2. 难点
-   - 理解三角形定义中"不在同一直线上"的含义
-   - 正确表示三角形及其基本要素
-
-三、内容分析
-
-"三角形"是初中几何学习的基础内容，是学生接触的第一个平面图形，对后续学习有重要意义。本节课主要介绍三角形的概念、基本要素和表示方法。
-通过生活实例引入，帮助学生理解三角形在现实中的应用，再通过操作、观察、讨论，使学生理解并掌握三角形的概念，为后续学习三角形的性质和分类奠定基础。
-
-四、教学过程
-
-第1课时：6.1 三角形的概念（45分钟）
-
-一、导入新课（5分钟）
-教学活动：
-1. 展示生活中包含三角形的图片（如：金字塔、桥梁、屋顶等）
-2. 提问：这些物体有什么共同的形状？
-
-教师活动：
-1. 展示PPT，播放图片
-2. 引导学生观察，并提出问题
-
-学生活动：
-1. 观察图片
-2. 回答问题：都有三角形
-
-设计意图：
-1. 通过生活实例引入，激发学生的学习兴趣
-2. 让学生感受到数学来源于生活，并应用于生活
-
-二、概念形成（15分钟）
-教学活动：
-1. 动手操作：让学生用小木棒或纸条拼搭三角形
-2. 展示学生作品，引导学生描述三角形的特征
-3. 给出三角形的定义，强调"不在同一直线上"、"首尾顺次相接"
-4. 辨析：判断哪些图形是三角形，哪些不是，并说明理由
-
-教师活动：
-1. 指导学生操作，巡视指导
-2. 引导学生观察、概括
-3. 强调定义中的关键词
-4. 组织学生讨论、辨析
-
-学生活动：
-1. 动手操作，积极参与
-2. 观察、描述三角形的特征
-3. 理解三角形的定义
-4. 辨析图形，加深理解
-
-设计意图：
-通过操作、观察、讨论，帮助学生理解三角形的定义，突破难点
-
-三、巩固练习（15分钟）
-教学活动：
-1. 引导学生认识三角形的顶点、边、角
-2. 讲解三角形的表示方法，强调字母顺序的任意性
-3. 练习：指出图中的三角形，并用不同的方法表示
-
-教师活动：
-1. 引导学生观察、识别
-2. 强调表示方法的规范性
-3. 布置练习，及时反馈
-
-学生活动：
-1. 认识三角形的要素
-2. 掌握三角形的表示方法
-3. 独立完成练习
-
-设计意图：
-帮助学生掌握三角形的基本要素和表示方法，培养学生的符号意识
-
-四、小结（10分钟）
-教学活动：
-1. 复习本节课的主要内容
-2. 布置课后作业
-
-教师活动：
-1. 引导学生总结
-2. 布置作业，说明要求
-
-学生活动：
-1. 参与总结
-2. 记录作业
-
-设计意图：
-巩固本节课的学习内容，为下节课做准备
-
-五、单元检测
-
-1. 判断下列说法是否正确：
-   (1) 三角形是由三条线段围成的图形。
-   (2) 三角形有三个顶点，这三个顶点必须不在同一直线上。
-   (3) △ABC可以表示为△BCA或△CAB。
-   (4) 三角形的三个角之和等于180°。
-
-2. 在下列图形中，找出所有的三角形，并用不同方法表示它们：
-   [此处应有图形]
-
-3. 用尺子画一个三角形，标出它的所有顶点、边和角。
-
-4. 实际应用题：
-   在桥梁设计中，为什么常常使用三角形结构？请结合三角形的特性解释。
-
-【备注：此为模拟数据，因两种API请求方法均失败，使用预设的本地数据】`
-        };
-        console.log('方法3模拟数据准备完成');
-        // 打印模拟数据
-        console.log('===== 模拟数据 =====');
-        console.log(JSON.stringify(data, null, 2));
-        console.log('===== 模拟数据结束 =====');
-      }
+      throw new Error(`调用 Dify API 失败: ${response.status} - ${errorText.substring(0, 100)}`);
     }
+    
+    data = await response.json();
+    method = 'direct';
+    console.log('调用成功!');
+    
+    // 打印Dify API的原始返回结果
+    console.log('===== Dify API 原始返回结果 =====');
+    console.log(JSON.stringify(data, null, 2));
+    console.log('===== Dify API 原始返回结果结束 =====');
 
-    console.log(`===== 最终使用方法: ${method} =====`);
     console.log('数据获取成功, 响应数据大小:', JSON.stringify(data).length, '字节');
     
     // 解析返回的结果 - 直接使用Dify返回的完整内容
