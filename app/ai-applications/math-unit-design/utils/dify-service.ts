@@ -198,6 +198,10 @@ ${input.unitTest ? `单元检测：${input.unitTest}` : ''}
       data = await response.json();
       method = 'direct';
       console.log('方法1直接调用成功!');
+      // 打印Dify API的原始返回结果
+      console.log('===== Dify API 原始返回结果 =====');
+      console.log(JSON.stringify(data, null, 2));
+      console.log('===== Dify API 原始返回结果结束 =====');
     } catch (directError) {
       console.error('方法1失败详情:', directError instanceof Error ? directError.message : '未知错误');
       if (directError instanceof Error && directError.stack) {
@@ -240,6 +244,10 @@ ${input.unitTest ? `单元检测：${input.unitTest}` : ''}
         data = await response.json();
         method = 'cors-proxy';
         console.log('方法2 CORS代理调用成功!');
+        // 打印Dify API通过CORS代理的原始返回结果
+        console.log('===== Dify API 通过CORS代理的原始返回结果 =====');
+        console.log(JSON.stringify(data, null, 2));
+        console.log('===== Dify API 通过CORS代理的原始返回结果结束 =====');
       } catch (corsError) {
         console.error('方法2失败详情:', corsError instanceof Error ? corsError.message : '未知错误');
         if (corsError instanceof Error && corsError.stack) {
@@ -380,6 +388,10 @@ ${input.unitTest ? `单元检测：${input.unitTest}` : ''}
 【备注：此为模拟数据，因两种API请求方法均失败，使用预设的本地数据】`
         };
         console.log('方法3模拟数据准备完成');
+        // 打印模拟数据
+        console.log('===== 模拟数据 =====');
+        console.log(JSON.stringify(data, null, 2));
+        console.log('===== 模拟数据结束 =====');
       }
     }
 
