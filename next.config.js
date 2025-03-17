@@ -1,21 +1,24 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
+  output: 'export',  // 改用静态导出
+  distDir: 'out',    // 输出到out目录
+  images: {
+    unoptimized: true, // 静态导出需要此配置
+  },
   compress: true,
   swcMinify: true,
   poweredByHeader: false,
   reactStrictMode: true,
-  // 移除静态导出配置，允许API路由正常工作
-  // output: 'export',
-  images: {
-    domains: ['localhost'],
-    unoptimized: true,
-  },
-  // 添加webpack配置，确保动态导入正常工作
+  // 减小构建大小
   webpack: (config, { isServer }) => {
     // 生产环境下禁用源码映射
     if (!isServer) {
       config.devtool = false;
+    }
+    // 优化包大小
+    config.optimization = {
+      ...config.optimization,
+      minimize: true,
     }
     return config;
   },
