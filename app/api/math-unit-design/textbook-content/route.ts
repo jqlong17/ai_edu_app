@@ -1,9 +1,6 @@
 import { NextResponse } from 'next/server';
 import textbookContentData from '../data/textbook-content.json';
 
-// 静态导出配置
-export const dynamic = 'force-static';
-
 export async function GET() {
   try {
     return NextResponse.json(textbookContentData);

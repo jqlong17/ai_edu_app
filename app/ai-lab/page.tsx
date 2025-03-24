@@ -1,7 +1,7 @@
 "use client"
 
 import { AppLayout } from "@/components/layout"
-import { Beaker, Video, Bot, Database, Brain } from "lucide-react"
+import { Beaker, Video, Bot, Database, Brain, Layers } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 
@@ -33,11 +33,19 @@ const labProjects = [
   },
   {
     id: "4",
-    name: "思维提取器",
-    description: "AI智能分析文献资料，提取核心思想和方法理念，帮助快速把握文献精髓",
+    name: "知识提取器",
+    description: "根据用户上传的多个文件自动抽取其核心思想和知识方法论，并支持发布为智能体",
     icon: Brain,
     status: "alpha",
     path: "/ai-lab/thought-extractor"
+  },
+  {
+    id: "5",
+    name: "AI应用工作室",
+    description: "支持用户通过拖拽式的方式生成AI应用，并发布到AI应用列表",
+    icon: Layers,
+    status: "beta",
+    path: "/ai-lab/app-studio"
   }
 ]
 

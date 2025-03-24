@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 import exampleData from '../data/example-polish-result.json';
 
-// 静态导出配置
-export const dynamic = 'force-static';
+// 移除静态导出配置
 
 export async function GET() {
   try {
