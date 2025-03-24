@@ -1056,8 +1056,8 @@ export default function AppStudio() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {apps.map(app => (
-                <div key={app.id} className="bg-white rounded-xl shadow-sm overflow-hidden">
-                  <div className="p-5">
+                <div key={app.id} className="bg-white rounded-xl shadow-sm overflow-hidden" style={{ height: "230px" }}>
+                  <div className="p-5 h-full flex flex-col">
                     <div className="flex justify-between items-start mb-3">
                       <h3 className="font-medium">{app.name}</h3>
                       <span className={`text-xs px-2 py-0.5 rounded-full ${
@@ -1069,35 +1069,37 @@ export default function AppStudio() {
                       </span>
                     </div>
                     
-                    <p className="text-sm text-gray-600 mb-4">
+                    <p className="text-sm text-gray-600 mb-4 flex-grow">
                       {app.description}
                     </p>
                     
-                    <div className="flex justify-between items-center text-xs text-gray-500">
-                      <span>{app.components} 个模块</span>
-                      <span>最后修改: {app.lastModified}</span>
-                    </div>
-                    
-                    <div className="mt-4 flex gap-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="text-blue-600" 
-                        onClick={() => handleEditApp(app.id)}
-                      >
-                        <Settings className="h-3.5 w-3.5 mr-1" />
-                        编辑
-                      </Button>
+                    <div className="flex flex-col gap-4 mt-auto">
+                      <div className="flex justify-between items-center text-xs text-gray-500">
+                        <span>{app.components} 个模块</span>
+                        <span>最后修改: {app.lastModified}</span>
+                      </div>
                       
-                      {app.status === "published" && (
+                      <div className="flex gap-2">
                         <Button 
                           variant="outline" 
-                          size="sm"
+                          size="sm" 
+                          className="text-blue-600" 
+                          onClick={() => handleEditApp(app.id)}
                         >
-                          <Play className="h-3.5 w-3.5 mr-1" />
-                          运行
+                          <Settings className="h-3.5 w-3.5 mr-1" />
+                          编辑
                         </Button>
-                      )}
+                        
+                        {app.status === "published" && (
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                          >
+                            <Play className="h-3.5 w-3.5 mr-1" />
+                            运行
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1107,6 +1109,7 @@ export default function AppStudio() {
               <div 
                 className="bg-white rounded-xl shadow-sm border-2 border-dashed border-gray-200 flex items-center justify-center p-10 cursor-pointer hover:border-blue-300 transition-colors"
                 onClick={handleCreateApp}
+                style={{ height: "230px" }}
               >
                 <div className="text-center">
                   <div className="mx-auto w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center mb-3">

@@ -1,7 +1,7 @@
 "use client"
 
 import { AppLayout } from "@/components/layout"
-import { Brain, ArrowLeft, Upload, Download, RefreshCw, FileText, Table } from "lucide-react"
+import { Brain, ArrowLeft, Upload, Download, RefreshCw, FileText, Table, Bot } from "lucide-react"
 import Link from "next/link"
 import { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
@@ -75,7 +75,7 @@ const defaultAnalysisResults: AnalysisResult[] = [
   }
 ]
 
-export default function ThoughtExtractor() {
+export default function KnowledgeExtractor() {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisResults, setAnalysisResults] = useState<AnalysisResult[]>(defaultAnalysisResults)
@@ -118,11 +118,11 @@ export default function ThoughtExtractor() {
             <ArrowLeft className="h-5 w-5" />
           </Link>
           <Brain className="h-6 w-6 mr-2 text-purple-600" />
-          <h1 className="text-2xl font-bold md:text-3xl">思维提取器</h1>
+          <h1 className="text-2xl font-bold md:text-3xl">知识提取器</h1>
           <span className="ml-3 px-2 py-1 text-xs font-medium text-purple-600 bg-purple-100 rounded-full">Alpha</span>
         </div>
         <p className="text-sm text-gray-600 md:text-base">
-          AI智能分析文献资料，提取核心思想和方法理念
+          根据用户上传的多个文件自动抽取其核心思想和知识方法论
         </p>
       </div>
       
@@ -130,9 +130,9 @@ export default function ThoughtExtractor() {
         <div className="max-w-5xl mx-auto">
           {/* 介绍模块 */}
           <div className="bg-white rounded-xl shadow-sm p-5 mb-6">
-            <h2 className="text-lg font-medium mb-4">什么是思维提取器？</h2>
+            <h2 className="text-lg font-medium mb-4">什么是知识提取器？</h2>
             <p className="text-sm text-gray-600 mb-4">
-              思维提取器是一个基于AI的智能分析工具，能够快速理解和提取文献资料中的核心思想和方法理念。它可以帮助教育工作者和研究人员快速把握文献精髓，激发创新思维。
+              知识提取器是一个基于AI的智能分析工具，能够从用户上传的多个文件中自动抽取核心思想和知识方法论。它不仅可以帮助教育工作者和研究人员快速把握文献精髓，还支持将提取的知识发布为智能体，实现知识的智能化应用。
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -147,6 +147,20 @@ export default function ThoughtExtractor() {
                 <h3 className="text-sm font-medium text-gray-900 mb-2">多维分析</h3>
                 <p className="text-sm text-gray-600">
                   从思想理念、研究方法、应用价值等多个维度进行分析，形成全面的认知框架。
+                </p>
+              </div>
+
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h3 className="text-sm font-medium text-gray-900 mb-2">智能体发布</h3>
+                <p className="text-sm text-gray-600">
+                  将提取的知识转化为智能体，实现知识的智能化应用和共享。
+                </p>
+              </div>
+              
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h3 className="text-sm font-medium text-gray-900 mb-2">批量处理</h3>
+                <p className="text-sm text-gray-600">
+                  支持多文件同时分析，提高知识提取和整合效率。
                 </p>
               </div>
             </div>
@@ -225,10 +239,17 @@ export default function ThoughtExtractor() {
               <div className="px-5 py-4 border-b border-gray-100 flex justify-between items-center">
                 <h2 className="font-medium">分析结果</h2>
                 
-                <Button variant="outline" onClick={handleDownloadExcel}>
-                  <Table className="h-4 w-4 mr-2" />
-                  导出Excel
-                </Button>
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={handleDownloadExcel}>
+                    <Table className="h-4 w-4 mr-2" />
+                    导出Excel
+                  </Button>
+                  
+                  <Button variant="outline" className="text-purple-600 border-purple-200 hover:bg-purple-50">
+                    <Bot className="h-4 w-4 mr-2" />
+                    发布为智能体
+                  </Button>
+                </div>
               </div>
               
               <div className="p-5">
@@ -242,16 +263,21 @@ export default function ThoughtExtractor() {
                             {result.authors} · {result.year}
                           </p>
                         </div>
-                        {result.status === "analyzing" && (
+                        {result.status === "analyzing" ? (
                           <div className="flex items-center">
                             <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
                               <div 
                                 className="h-full bg-purple-600 transition-all duration-500"
                                 style={{ width: `${result.progress}%` }}
-                              ></div>
+                              />
                             </div>
-                            <span className="ml-2 text-sm text-gray-500">{result.progress}%</span>
+                            <span className="ml-2 text-xs text-gray-500">{result.progress}%</span>
                           </div>
+                        ) : (
+                          <button className="text-xs px-2.5 py-1 rounded-full border border-purple-200 text-purple-600 bg-purple-50 hover:bg-purple-100 flex items-center">
+                            <Bot className="h-3 w-3 mr-1" />
+                            发布为智能体
+                          </button>
                         )}
                       </div>
                       
