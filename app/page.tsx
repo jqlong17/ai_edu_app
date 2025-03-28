@@ -44,7 +44,6 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
-  const [activeTab, setActiveTab] = useState<'work' | 'subject'>('work') // 添加标签页切换状态
 
   // 加载应用数据
   useEffect(() => {
@@ -158,63 +157,51 @@ export default function Home() {
         </div>
       </div>
       
-      {/* 分类标签切换 */}
-      <div className="flex border-b border-gray-100">
-        <button 
-          className={`flex-1 py-2.5 text-center font-medium ${
-            activeTab === 'work' 
-              ? 'text-blue-600 border-b-2 border-blue-600' 
-              : 'text-gray-500 hover:text-gray-800'
-          }`}
-          onClick={() => setActiveTab('work')}
-        >
-          按工作类型
-        </button>
-        <button 
-          className={`flex-1 py-2.5 text-center font-medium ${
-            activeTab === 'subject' 
-              ? 'text-blue-600 border-b-2 border-blue-600' 
-              : 'text-gray-500 hover:text-gray-800'
-          }`}
-          onClick={() => setActiveTab('subject')}
-        >
-          按学科分类
-        </button>
-      </div>
-      
       {/* 分类标签 */}
-      <div className="flex overflow-x-auto px-3 py-3 md:py-4 gap-2 no-scrollbar bg-white sticky top-0 z-10 border-b border-gray-100">
-        {activeTab === 'work' ? (
-          // 工作类型分类标签
-          workCategories.map((category) => (
-            <div 
-              key={category.id} 
-              className={`px-4 py-1.5 rounded-full whitespace-nowrap text-sm cursor-pointer ${
-                category.id === selectedWorkCategory
-                  ? "bg-blue-500 text-white" 
-                  : "text-gray-700 hover:bg-gray-50"
-              }`}
-              onClick={() => setSelectedWorkCategory(category.id)}
-            >
-              {category.name}
+      <div className="bg-white border-b border-gray-100">
+        {/* 工作类型分类 */}
+        <div className="px-4 py-3 border-b border-gray-100">
+          <div className="flex items-center gap-3">
+            <div className="text-sm font-medium text-gray-700 whitespace-nowrap">类型</div>
+            <div className="flex overflow-x-auto gap-2 no-scrollbar">
+              {workCategories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => setSelectedWorkCategory(category.id)}
+                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${
+                    category.id === selectedWorkCategory
+                      ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  {category.name}
+                </button>
+              ))}
             </div>
-          ))
-        ) : (
-          // 学科分类标签
-          subjectCategories.map((category) => (
-            <div 
-              key={category.id} 
-              className={`px-4 py-1.5 rounded-full whitespace-nowrap text-sm cursor-pointer ${
-                category.id === selectedSubjectCategory
-                  ? "bg-blue-500 text-white" 
-                  : "text-gray-700 hover:bg-gray-50"
-              }`}
-              onClick={() => setSelectedSubjectCategory(category.id)}
-            >
-              {category.name}
+          </div>
+        </div>
+
+        {/* 学科分类 */}
+        <div className="px-4 py-3">
+          <div className="flex items-center gap-3">
+            <div className="text-sm font-medium text-gray-700 whitespace-nowrap">学科</div>
+            <div className="flex overflow-x-auto gap-2 no-scrollbar">
+              {subjectCategories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => setSelectedSubjectCategory(category.id)}
+                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${
+                    category.id === selectedSubjectCategory
+                      ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  {category.name}
+                </button>
+              ))}
             </div>
-          ))
-        )}
+          </div>
+        </div>
       </div>
       
       {/* 当前筛选条件显示 */}
