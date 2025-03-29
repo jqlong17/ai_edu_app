@@ -1,0 +1,83 @@
+/* 阅卷助手应用样式 */
+.paper-card {
+  transition: all 0.2s;
+  overflow: hidden;
+}
+
+.paper-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.stats-card {
+  background: linear-gradient(to right, #f0f9ff, #e6f7ff);
+  border-radius: 0.75rem;
+}
+
+.annotation-tool {
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.annotation-tool:hover {
+  opacity: 0.8;
+  transform: scale(1.05);
+}
+
+.annotation-tool.active {
+  background-color: #e6f7ff;
+  color: #1890ff;
+  border-color: #1890ff;
+}
+
+.student-list-item {
+  transition: background-color 0.15s;
+}
+
+.student-list-item:hover {
+  background-color: #f5f5f5;
+}
+
+.student-list-item.selected {
+  background-color: #e6f7ff;
+  border-left: 3px solid #1890ff;
+}
+
+.zoom-controls {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+}
+
+.marker {
+  position: absolute;
+  z-index: 5;
+}
+
+.marker.correct {
+  color: #52c41a;
+}
+
+.marker.wrong {
+  color: #f5222d;
+}
+
+.marker.comment {
+  color: #1890ff;
+}
+
+.favorite-tag {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #faad14;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 0 0 0 8px;
+  font-size: 12px;
+  z-index: 5;
+} 

@@ -48,4 +48,5 @@ id,name,title,description,categories,icon,path,enabled
 47,教师画像分析,智能教师专业素养画像,分析教师专业发展情况,教师发展;学情分析,/images/app-icon2.png,/ai-applications/teacher-portrait,false
 48,校园文化规划,智能校园文化建设方案,规划校园文化建设项目,学校管理;德育工作,/images/app-icon3.png,/ai-applications/campus-culture,false
 49,班级荣誉管理,智能班级荣誉档案系统,管理班级获奖和荣誉记录,班主任工作,/images/app-icon4.png,/ai-applications/honor-management,false
-50,教学成果展示,智能教学成果展示平台,展示和分享优秀教学成果,教师发展;教研活动,/images/app-icon5.png,/ai-applications/achievement-display,false 
+50,教学成果展示,智能教学成果展示平台,展示和分享优秀教学成果,教师发展;教研活动,/images/app-icon5.png,/ai-applications/achievement-display,false
+51,阅卷助手,智能化试卷批改与成绩分析工具,支持拍照上传试卷、记录成绩、智能统计和分享成绩报告,教学评估;教学工具;学情分析,/images/app-icon1.png,/ai-applications/exam-grading,true 
