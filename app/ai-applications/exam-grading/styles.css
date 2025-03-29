@@ -14,6 +14,16 @@
   border-radius: 0.75rem;
 }
 
+/* 分数分布图样式 */
+.score-chart-column {
+  transition: all 0.3s ease;
+}
+
+.score-chart-column:hover {
+  transform: scaleY(1.05);
+  filter: brightness(1.1);
+}
+
 .annotation-tool {
   cursor: pointer;
   transition: all 0.15s;

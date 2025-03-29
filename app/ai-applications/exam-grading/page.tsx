@@ -24,7 +24,7 @@ const STUDENTS_DATA = [
   { id: 10, name: "王十二", class: "三年级一班" },
 ]
 
-// 模拟班级数据
+// 修改班级数据使其更丰富
 const CLASS_STATS = {
   totalStudents: 28,
   completedGrading: 10,
@@ -127,19 +127,21 @@ export default function ExamGrading() {
     
     return (
       <div className="mt-4">
-        <h3 className="text-base font-medium mb-2">分数分布</h3>
-        <div className="flex items-end h-40 gap-1">
+        <div className="flex items-end h-48 gap-4">
           {CLASS_STATS.scoreDistribution.map((item, index) => (
             <div key={index} className="flex flex-col items-center flex-1">
-              <div 
-                className="w-full rounded-t-sm" 
-                style={{ 
-                  height: `${(item.count / maxCount) * 100}%`,
-                  backgroundColor: item.color
-                }}
-              />
-              <div className="text-xs mt-1">{item.range}</div>
-              <div className="text-xs text-gray-500">{item.count}人</div>
+              <div className="flex flex-col items-center w-full">
+                <div className="text-xs mb-1 text-gray-500">{item.count}人</div>
+                <div 
+                  className="w-full rounded-t-sm score-chart-column" 
+                  style={{ 
+                    height: `${(item.count / maxCount) * 180}px`,
+                    backgroundColor: item.color
+                  }}
+                  title={`${item.range}分: ${item.count}人`}
+                />
+                <div className="text-xs mt-2">{item.range}</div>
+              </div>
             </div>
           ))}
         </div>
@@ -389,7 +391,7 @@ export default function ExamGrading() {
               {activeTab === 'stats' && (
                 <div>
                   {/* 整体统计卡片 */}
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                     <div className="bg-white p-4 rounded-lg shadow-sm">
                       <div className="text-sm text-gray-500 mb-1">总人数</div>
                       <div className="text-2xl font-bold">{CLASS_STATS.totalStudents}人</div>
@@ -416,17 +418,19 @@ export default function ExamGrading() {
                   </div>
                   
                   {/* 班级成绩详细统计 */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* 分数分布图表 */}
+                  <div className="mb-6">
+                    <h3 className="text-base font-medium mb-2">班级成绩分布</h3>
                     <div className="bg-white p-4 rounded-lg shadow-sm">
-                      <h3 className="text-base font-medium mb-4">班级成绩分布</h3>
+                      <div className="text-base font-medium mb-4">分数分布</div>
+                      <div className="text-xs text-gray-500 mb-3">鼠标悬停在柱状图上可查看详细信息</div>
                       {renderScoreChart()}
                     </div>
-                    
-                    {/* 成绩报告 */}
+                  </div>
+                  
+                  {/* 智能分析报告 */}
+                  <div>
+                    <h3 className="text-base font-medium mb-2">智能分析报告</h3>
                     <div className="bg-white p-4 rounded-lg shadow-sm">
-                      <h3 className="text-base font-medium mb-4">智能分析报告</h3>
-                      
                       <div className="bg-blue-50 border-l-4 border-blue-500 p-3 rounded-r-md mb-4">
                         <div className="text-sm font-medium text-blue-700 mb-1">整体情况</div>
                         <div className="text-sm text-gray-600">
