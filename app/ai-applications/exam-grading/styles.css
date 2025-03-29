@@ -32,6 +32,7 @@
 
 .student-list-item {
   transition: background-color 0.15s;
+  cursor: pointer;
 }
 
 .student-list-item:hover {
