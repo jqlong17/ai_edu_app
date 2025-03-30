@@ -1,0 +1,40 @@
+/* 项目式学习特定样式 */
+.prose {
+  @apply text-gray-800;
+}
+
+.prose h1, 
+.prose h2, 
+.prose h3, 
+.prose h4 {
+  @apply font-bold text-gray-900 my-4;
+}
+
+.prose h1 {
+  @apply text-2xl;
+}
+
+.prose h2 {
+  @apply text-xl;
+}
+
+.prose h3 {
+  @apply text-lg;
+}
+
+.prose p {
+  @apply my-3;
+}
+
+.prose ul, 
+.prose ol {
+  @apply my-3 pl-5;
+}
+
+.prose li {
+  @apply mb-1;
+}
+
+.prose blockquote {
+  @apply pl-4 border-l-4 border-gray-300 italic my-4 text-gray-700;
+} 
