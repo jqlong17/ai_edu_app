@@ -7,7 +7,7 @@ import {
   Upload, Check, X, MessageSquare, Bookmark, Share2, 
   Pencil, ZoomIn, ZoomOut, RotateCcw, Search, Plus, 
   FileText, ListFilter, Star, ChevronDown, ChevronUp, 
-  Users, Award, BarChart2, PenTool, Camera, ArrowLeft
+  Users, Award, BarChart2, PenTool, Camera, ArrowLeft, Layers, ClipboardList
 } from "lucide-react"
 import Link from "next/link"
 
@@ -49,7 +49,60 @@ const FAVORITE_PAPERS = [
   { id: 102, studentName: "李四", score: 65, reason: "需要加强基础知识" },
 ]
 
+// 班级数据
+const classData = [
+  { id: '1', name: '三年级一班', examCount: 5, studentCount: 38 },
+  { id: '2', name: '三年级二班', examCount: 4, studentCount: 42 },
+  { id: '3', name: '三年级三班', examCount: 3, studentCount: 39 },
+];
+
+// 考试数据
+const examData = [
+  { id: '1', classId: '1', name: '数学期中考试', date: '2023-10-15', completed: 38, total: 38 },
+  { id: '2', classId: '1', name: '数学单元测试(一)', date: '2023-09-20', completed: 36, total: 38 },
+  { id: '3', classId: '2', name: '数学期中考试', date: '2023-10-15', completed: 40, total: 42 },
+];
+
 export default function ExamGrading() {
+  // 当前视图: classes(班级列表), exams(考试列表), papers(试卷列表), stats(成绩统计), favorites(收藏试卷)
+  const [activeView, setActiveView] = useState<'classes' | 'exams' | 'papers' | 'stats' | 'favorites' | 'upload'>('classes');
+  
+  // 已选择的班级和考试
+  const [selectedClass, setSelectedClass] = useState<string | null>(null);
+  const [selectedExam, setSelectedExam] = useState<string | null>(null);
+  
+  // 侧边栏和工具栏的显示状态
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [toolbarOpen, setToolbarOpen] = useState(false);
+  
+  // 学生列表和切换班级的显示状态
+  const [showClassSelector, setShowClassSelector] = useState(false);
+  
+  // 处理班级选择
+  const handleClassSelect = (classId: string) => {
+    setSelectedClass(classId);
+    setActiveView('exams');
+  };
+  
+  // 处理考试选择
+  const handleExamSelect = (examId: string) => {
+    setSelectedExam(examId);
+    setActiveView('papers');
+  };
+  
+  // 返回班级列表
+  const handleBackToClasses = () => {
+    setSelectedClass(null);
+    setSelectedExam(null);
+    setActiveView('classes');
+  };
+  
+  // 返回考试列表
+  const handleBackToExams = () => {
+    setSelectedExam(null);
+    setActiveView('exams');
+  };
+
   // 状态管理
   const [activeTab, setActiveTab] = useState<'paper' | 'stats' | 'favorites'>('paper')
   const [selectedStudent, setSelectedStudent] = useState<number | null>(null)
@@ -57,13 +110,10 @@ export default function ExamGrading() {
   const [annotations, setAnnotations] = useState<Array<any>>([])
   const [activeTool, setActiveTool] = useState<'correct' | 'wrong' | 'comment' | null>(null)
   const [zoomLevel, setZoomLevel] = useState<number>(1)
-  const [showClassSelector, setShowClassSelector] = useState<boolean>(false)
   const [searchText, setSearchText] = useState<string>('')
   const [studentScores, setStudentScores] = useState<Record<number, number>>({
     1: 98, 2: 76, 3: 85, 4: 62, 5: 91
   })
-  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false)
-  const [toolbarOpen, setToolbarOpen] = useState<boolean>(false)
   const [showFunctionSelector, setShowFunctionSelector] = useState<boolean>(false)
 
   const paperRef = useRef<HTMLDivElement>(null)
@@ -171,28 +221,60 @@ export default function ExamGrading() {
         </div>
 
         {/* 功能切换标签页 */}
-        <div className="bg-white border-b border-gray-200 flex">
+        <div className="bg-white border-b border-gray-200 flex overflow-x-auto">
           <div className="flex-1 flex">
             <button
-              onClick={() => setActiveTab('paper')}
-              className={`px-4 py-3 text-sm font-medium relative ${
-                activeTab === 'paper' 
+              onClick={() => setActiveView('classes')}
+              className={`px-4 py-3 text-sm font-medium relative whitespace-nowrap ${
+                activeView === 'classes' 
+                  ? 'text-blue-500' 
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <div className="flex items-center">
+                <Layers className="w-4 h-4 mr-1.5" />
+                班级管理
+              </div>
+              {activeView === 'classes' && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500"></div>
+              )}
+            </button>
+            <button
+              onClick={() => setActiveView('upload')}
+              className={`px-4 py-3 text-sm font-medium relative whitespace-nowrap ${
+                activeView === 'upload' 
+                  ? 'text-blue-500' 
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <div className="flex items-center">
+                <Upload className="w-4 h-4 mr-1.5" />
+                上传试卷
+              </div>
+              {activeView === 'upload' && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500"></div>
+              )}
+            </button>
+            <button
+              onClick={() => setActiveView('papers')}
+              className={`px-4 py-3 text-sm font-medium relative whitespace-nowrap ${
+                activeView === 'papers' 
                   ? 'text-blue-500' 
                   : 'text-gray-500 hover:text-gray-700'
               }`}
             >
               <div className="flex items-center">
                 <FileText className="w-4 h-4 mr-1.5" />
-                试卷批改
+                查看试卷
               </div>
-              {activeTab === 'paper' && (
+              {activeView === 'papers' && (
                 <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500"></div>
               )}
             </button>
             <button
-              onClick={() => setActiveTab('stats')}
-              className={`px-4 py-3 text-sm font-medium relative ${
-                activeTab === 'stats' 
+              onClick={() => setActiveView('stats')}
+              className={`px-4 py-3 text-sm font-medium relative whitespace-nowrap ${
+                activeView === 'stats' 
                   ? 'text-blue-500' 
                   : 'text-gray-500 hover:text-gray-700'
               }`}
@@ -201,49 +283,62 @@ export default function ExamGrading() {
                 <BarChart2 className="w-4 h-4 mr-1.5" />
                 成绩统计
               </div>
-              {activeTab === 'stats' && (
+              {activeView === 'stats' && (
                 <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500"></div>
               )}
             </button>
             <button
-              onClick={() => setActiveTab('favorites')}
-              className={`px-4 py-3 text-sm font-medium relative ${
-                activeTab === 'favorites' 
+              onClick={() => setActiveView('favorites')}
+              className={`px-4 py-3 text-sm font-medium relative whitespace-nowrap ${
+                activeView === 'favorites' 
                   ? 'text-blue-500' 
                   : 'text-gray-500 hover:text-gray-700'
               }`}
             >
               <div className="flex items-center">
-                <Bookmark className="w-4 h-4 mr-1.5" />
+                <Star className="w-4 h-4 mr-1.5" />
                 收藏试卷
               </div>
-              {activeTab === 'favorites' && (
+              {activeView === 'favorites' && (
                 <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500"></div>
               )}
             </button>
           </div>
         </div>
-      </div>
 
-      {/* 批改工具栏 - 只在试卷批改选项卡下显示 */}
-      {activeTab === 'paper' && (
-        <div className="bg-gray-50 border-b border-gray-200 flex py-1 md:hidden">
-          <button 
-            className={`flex items-center px-3 py-2 text-sm font-medium flex-1 ${sidebarOpen ? 'text-blue-500' : 'text-gray-600'}`}
-            onClick={() => {setSidebarOpen(!sidebarOpen); setToolbarOpen(false);}}
-          >
-            <Users size={16} className="mr-1.5" />
-            学生
-          </button>
-          <button 
-            className={`flex items-center px-3 py-2 text-sm font-medium flex-1 ${toolbarOpen ? 'text-blue-500' : 'text-gray-600'}`}
-            onClick={() => {setToolbarOpen(!toolbarOpen); setSidebarOpen(false);}}
-          >
-            <PenTool size={16} className="mr-1.5" />
-            工具
-          </button>
-        </div>
-      )}
+        {/* 当前层级路径显示 */}
+        {(selectedClass || selectedExam) && (
+          <div className="bg-gray-50 border-b border-gray-200 px-4 py-2 flex items-center text-sm">
+            <button 
+              onClick={handleBackToClasses}
+              className="text-blue-600 hover:underline"
+            >
+              班级列表
+            </button>
+            
+            {selectedClass && (
+              <>
+                <span className="mx-2 text-gray-400">/</span>
+                <button
+                  onClick={handleBackToExams}
+                  className={`${selectedExam ? 'text-blue-600 hover:underline' : 'text-gray-600'}`}
+                >
+                  {classData.find(c => c.id === selectedClass)?.name}
+                </button>
+              </>
+            )}
+            
+            {selectedExam && (
+              <>
+                <span className="mx-2 text-gray-400">/</span>
+                <span className="text-gray-600">
+                  {examData.find(e => e.id === selectedExam)?.name}
+                </span>
+              </>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* 主体内容区域 */}
       <div className="flex min-h-screen bg-gray-50 md:pb-0">
@@ -312,7 +407,7 @@ export default function ExamGrading() {
             {/* 中间试卷区域 */}
             <div className="flex-1 p-2 sm:p-4">
               {/* 试卷批改内容 */}
-              {activeTab === 'paper' && (
+              {activeView === 'papers' && (
                 <div className="h-full flex flex-col">
                   {/* 试卷展示区域 */}
                   <div className="flex-1 bg-white rounded-lg shadow-sm overflow-hidden">
@@ -422,162 +517,178 @@ export default function ExamGrading() {
               )}
               
               {/* 成绩统计内容 */}
-              {activeTab === 'stats' && (
-                <div>
-                  {/* 整体统计卡片 */}
-                  <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-6">
-                    <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm">
-                      <div className="text-xs sm:text-sm text-gray-500 mb-1">总人数</div>
-                      <div className="text-xl sm:text-2xl font-bold">{CLASS_STATS.totalStudents}人</div>
-                      <div className="text-xs text-gray-400 mt-1">已批改: {CLASS_STATS.completedGrading}人</div>
+              {activeView === 'stats' && (
+                <div className="space-y-6">
+                  {/* 数据概览卡片 */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="stats-card p-4">
+                      <div className="text-gray-500 text-sm">总学生数</div>
+                      <div className="text-2xl font-bold mt-1">119</div>
                     </div>
-                    
-                    <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm">
-                      <div className="text-xs sm:text-sm text-gray-500 mb-1">平均分</div>
-                      <div className="text-xl sm:text-2xl font-bold">{CLASS_STATS.averageScore}分</div>
-                      <div className="text-xs text-gray-400 mt-1">满分: 100分</div>
+                    <div className="stats-card p-4">
+                      <div className="text-gray-500 text-sm">已批改试卷</div>
+                      <div className="text-2xl font-bold mt-1">342</div>
                     </div>
-                    
-                    <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm">
-                      <div className="text-xs sm:text-sm text-gray-500 mb-1">最高/最低分</div>
-                      <div className="text-xl sm:text-2xl font-bold">{CLASS_STATS.highestScore}/{CLASS_STATS.lowestScore}</div>
-                      <div className="text-xs text-gray-400 mt-1">分差: {CLASS_STATS.highestScore - CLASS_STATS.lowestScore}分</div>
+                    <div className="stats-card p-4">
+                      <div className="text-gray-500 text-sm">平均分</div>
+                      <div className="text-2xl font-bold mt-1">82.5</div>
                     </div>
-                    
-                    <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm">
-                      <div className="text-xs sm:text-sm text-gray-500 mb-1">及格率/优秀率</div>
-                      <div className="text-xl sm:text-2xl font-bold">{CLASS_STATS.passingRate}%/{CLASS_STATS.excellentRate}%</div>
-                      <div className="text-xs text-gray-400 mt-1">优秀: ≥90分, 及格: ≥60分</div>
+                    <div className="stats-card p-4">
+                      <div className="text-gray-500 text-sm">优秀率</div>
+                      <div className="text-2xl font-bold mt-1">28%</div>
                     </div>
                   </div>
                   
-                  {/* 班级成绩详细统计 */}
-                  <div className="mb-4 sm:mb-6">
-                    <h3 className="text-sm sm:text-base font-medium mb-2">班级成绩分布</h3>
-                    <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm">
-                      <div className="text-sm sm:text-base font-medium mb-3 sm:mb-4">分数分布</div>
-                      <div className="text-xs text-gray-500 mb-2 sm:mb-3">点击柱状图可查看详细信息</div>
-                      <div className="overflow-x-auto pb-2">
-                        <div className="min-w-[450px]">
-                          {renderScoreChart()}
-                        </div>
+                  {/* 班级成绩分析 */}
+                  <div className="bg-white p-4 rounded-lg shadow">
+                    <h3 className="text-lg font-medium mb-4">班级成绩分析</h3>
+                    
+                    {/* 班级选择器 */}
+                    <div className="flex mb-4 border-b pb-4">
+                      {classData.map(cls => (
+                        <button 
+                          key={cls.id}
+                          className={`mr-4 px-3 py-1 rounded-full text-sm ${
+                            selectedClass === cls.id 
+                            ? 'bg-blue-100 text-blue-700' 
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          }`}
+                          onClick={() => setSelectedClass(cls.id)}
+                        >
+                          {cls.name}
+                        </button>
+                      ))}
+                    </div>
+                    
+                    {/* 分数分布图 */}
+                    <div className="h-64 flex items-end space-x-2 mb-6">
+                      {[
+                        {range: '0-59', count: 3, color: 'bg-red-400'},
+                        {range: '60-69', count: 8, color: 'bg-orange-400'},
+                        {range: '70-79', count: 12, color: 'bg-yellow-400'},
+                        {range: '80-89', count: 14, color: 'bg-blue-400'},
+                        {range: '90-100', count: 7, color: 'bg-green-400'}
+                      ].map((item, i) => {
+                        const height = (item.count / 15) * 100;
+                        return (
+                          <div key={i} className="flex flex-col items-center flex-1">
+                            <div 
+                              className={`score-chart-column w-full ${item.color}`}
+                              style={{height: `${height}%`}}
+                            >
+                              <div className="invisible group-hover:visible absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2">
+                                {item.count}人
+                              </div>
+                            </div>
+                            <div className="text-xs text-gray-500 mt-2">{item.range}</div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    
+                    {/* 成绩对比 */}
+                    <div className="border-t pt-4">
+                      <h4 className="text-base font-medium mb-3">考试成绩趋势</h4>
+                      <div className="text-sm text-gray-500 mb-2">该班级近5次考试平均分趋势</div>
+                      <div className="h-40 bg-gray-50 rounded flex items-center justify-center">
+                        <p className="text-gray-400">图表区域：展示成绩趋势线</p>
                       </div>
                     </div>
                   </div>
                   
-                  {/* 智能分析报告 */}
-                  <div>
-                    <h3 className="text-sm sm:text-base font-medium mb-2">智能分析报告</h3>
-                    <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm">
-                      <div className="bg-blue-50 border-l-4 border-blue-500 p-2 sm:p-3 rounded-r-md mb-3 sm:mb-4">
-                        <div className="text-xs sm:text-sm font-medium text-blue-700 mb-1">整体情况</div>
-                        <div className="text-xs sm:text-sm text-gray-600">
-                          班级整体成绩良好，平均分{CLASS_STATS.averageScore}分。优秀率{CLASS_STATS.excellentRate}%，及格率{CLASS_STATS.passingRate}%。
-                        </div>
-                      </div>
-                      
-                      <div className="bg-yellow-50 border-l-4 border-yellow-500 p-2 sm:p-3 rounded-r-md mb-3 sm:mb-4">
-                        <div className="text-xs sm:text-sm font-medium text-yellow-700 mb-1">问题分析</div>
-                        <div className="text-xs sm:text-sm text-gray-600">
-                          有3名学生得分低于70分，建议重点关注。班级整体在应用题方面的掌握较弱，可加强此方面训练。
-                        </div>
-                      </div>
-                      
-                      <div className="bg-green-50 border-l-4 border-green-500 p-2 sm:p-3 rounded-r-md">
-                        <div className="text-xs sm:text-sm font-medium text-green-700 mb-1">教学建议</div>
-                        <div className="text-xs sm:text-sm text-gray-600">
-                          1. 针对计算题，学生掌握较好，可以适当增加难度<br/>
-                          2. 针对应用题，建议增加训练和讲解<br/>
-                          3. 对于分数低于70分的学生，建议进行单独辅导
-                        </div>
-                      </div>
-                      
-                      <button className="mt-4 w-full flex items-center justify-center bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">
-                        <FileText size={16} className="mr-1" />
-                        <span>导出完整报告</span>
-                      </button>
+                  {/* 个人成绩分析 */}
+                  <div className="bg-white p-4 rounded-lg shadow">
+                    <h3 className="text-lg font-medium mb-4">个人成绩分析</h3>
+                    <div className="text-sm text-gray-500 mb-4">选择学生查看历史成绩趋势</div>
+                    
+                    <div className="relative mb-4">
+                      <input
+                        type="text"
+                        className="bg-white rounded-lg border border-gray-200 px-4 py-2 text-sm w-full pl-8"
+                        placeholder="搜索学生"
+                      />
+                      <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    </div>
+                    
+                    <div className="h-40 bg-gray-50 rounded flex items-center justify-center">
+                      <p className="text-gray-400">请先选择学生以查看个人成绩分析</p>
                     </div>
                   </div>
                 </div>
               )}
               
               {/* 收藏试卷内容 */}
-              {activeTab === 'favorites' && (
-                <div>
-                  <div className="flex justify-between items-center mb-3 sm:mb-4">
-                    <h3 className="text-sm sm:text-base font-medium">收藏的试卷</h3>
-                    <div className="flex items-center">
-                      <button className="text-xs sm:text-sm flex items-center text-gray-500 mr-2 sm:mr-3">
-                        <ListFilter size={14} className="mr-1" />
-                        <span className="hidden sm:inline">筛选</span>
-                      </button>
-                      <button className="text-xs sm:text-sm flex items-center text-blue-500">
-                        <Plus size={14} className="mr-1" />
-                        <span className="hidden sm:inline">添加收藏</span>
-                      </button>
+              {activeView === 'favorites' && (
+                <div className="space-y-4">
+                  <h2 className="text-xl font-medium mb-4">收藏试卷</h2>
+                  
+                  {/* 筛选选项 */}
+                  <div className="bg-white p-4 rounded-lg shadow mb-4">
+                    <div className="flex flex-wrap gap-4">
+                      <div>
+                        <label className="block text-sm text-gray-700 mb-1">班级</label>
+                        <select className="border border-gray-300 rounded-md px-3 py-1.5 text-sm w-32">
+                          <option value="">全部班级</option>
+                          {classData.map(cls => (
+                            <option key={cls.id} value={cls.id}>{cls.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm text-gray-700 mb-1">考试</label>
+                        <select className="border border-gray-300 rounded-md px-3 py-1.5 text-sm w-40">
+                          <option value="">全部考试</option>
+                          {examData.map(exam => (
+                            <option key={exam.id} value={exam.id}>{exam.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm text-gray-700 mb-1">收藏原因</label>
+                        <select className="border border-gray-300 rounded-md px-3 py-1.5 text-sm w-32">
+                          <option value="">全部原因</option>
+                          <option value="excellent">优秀范例</option>
+                          <option value="common_mistake">常见错误</option>
+                          <option value="improvement">进步明显</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
                   
-                  {/* 收藏试卷列表 */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                    {FAVORITE_PAPERS.map(paper => (
-                      <div key={paper.id} className="bg-white p-3 sm:p-4 rounded-lg shadow-sm relative paper-card">
-                        <div className="favorite-tag">
-                          <Star size={12} className="inline-block mr-1" />
-                          <span>收藏</span>
-                        </div>
-                        
-                        <div className="flex items-start">
-                          <div className="bg-gray-100 w-16 sm:w-20 h-24 sm:h-28 rounded-md flex items-center justify-center mr-2 sm:mr-3">
-                            <FileText className="text-gray-400 w-5 h-5 sm:w-6 sm:h-6" />
+                  {/* 收藏列表 */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {[...Array(6)].map((_, i) => (
+                      <div key={i} className="bg-white rounded-lg shadow overflow-hidden">
+                        <div className="relative">
+                          <div className="h-40 bg-gray-100 flex items-center justify-center">
+                            <FileText className="h-12 w-12 text-gray-400" />
                           </div>
-                          
-                          <div className="flex-1">
-                            <div className="flex justify-between items-start">
-                              <div>
-                                <div className="font-medium text-sm sm:text-base">{paper.studentName}的试卷</div>
-                                <div className="text-xs text-gray-500 mt-1">三年级一班 · 数学期中考试</div>
-                              </div>
-                              <div className={`text-base sm:text-lg font-bold ${
-                                paper.score >= 90 ? 'text-green-500' : 
-                                paper.score >= 60 ? 'text-orange-500' : 'text-red-500'
-                              }`}>
-                                {paper.score}分
-                              </div>
-                            </div>
-                            
-                            <div className="mt-2 text-xs sm:text-sm text-gray-600">
-                              <div className="font-medium mb-1">收藏原因:</div>
-                              <div>{paper.reason}</div>
-                            </div>
-                            
-                            <div className="mt-2 flex flex-wrap gap-2">
-                              <button className="text-xs text-blue-500 border border-blue-500 px-2 py-1 rounded">
-                                查看详情
-                              </button>
-                              <button className="text-xs text-blue-500 border border-blue-500 px-2 py-1 rounded">
-                                取消收藏
-                              </button>
-                            </div>
+                          <div className="absolute top-0 right-0 bg-yellow-500 text-white px-2 py-1 text-xs">
+                            {['优秀范例', '常见错误', '进步明显'][i % 3]}
+                          </div>
+                        </div>
+                        <div className="p-4">
+                          <h3 className="font-medium">学生 {i + 1} 的试卷</h3>
+                          <div className="text-sm text-gray-500 mt-1">
+                            三年级一班 - 数学期中考试
+                          </div>
+                          <div className="text-sm mt-2">
+                            <span className="text-blue-600 font-medium">92</span> 分
+                          </div>
+                          <div className="flex justify-between mt-3 pt-3 border-t">
+                            <button className="text-sm text-blue-500">查看详情</button>
+                            <button className="text-sm text-gray-500">取消收藏</button>
                           </div>
                         </div>
                       </div>
                     ))}
-                    
-                    {/* 空白收藏卡片 */}
-                    <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border border-dashed border-gray-300 flex items-center justify-center h-[130px] sm:h-[152px] cursor-pointer hover:bg-gray-50">
-                      <div className="text-center text-gray-400">
-                        <Plus size={20} className="mx-auto mb-1" />
-                        <div className="text-xs sm:text-sm">添加收藏</div>
-                      </div>
-                    </div>
                   </div>
                 </div>
               )}
             </div>
             
             {/* 右侧工具栏 */}
-            {activeTab === 'paper' && (
+            {activeView === 'papers' && (
               <div className={`${toolbarOpen ? 'fixed inset-0 z-40' : 'hidden'} md:block md:relative md:z-auto md:w-56`}>
                 {toolbarOpen && (
                   <div className="absolute inset-0 bg-black bg-opacity-20 md:hidden" onClick={() => setToolbarOpen(false)} />
