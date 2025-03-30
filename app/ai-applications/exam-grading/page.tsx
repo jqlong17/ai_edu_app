@@ -7,8 +7,9 @@ import {
   Upload, Check, X, MessageSquare, Bookmark, Share2, 
   Pencil, ZoomIn, ZoomOut, RotateCcw, Search, Plus, 
   FileText, ListFilter, Star, ChevronDown, ChevronUp, 
-  Users, Award, BarChart2, PenTool, Camera 
+  Users, Award, BarChart2, PenTool, Camera, ArrowLeft
 } from "lucide-react"
+import Link from "next/link"
 
 // 模拟学生数据
 const STUDENTS_DATA = [
@@ -154,66 +155,84 @@ export default function ExamGrading() {
 
   return (
     <AppLayout>
-      {/* 顶部标题区域 */}
-      <div className="bg-gradient-to-r from-blue-100 to-blue-200 p-4">
-        <div className="flex items-center">
-          <FileText className="h-6 w-6 mr-2 text-blue-600" />
-          <h1 className="text-xl font-bold">阅卷助手</h1>
-        </div>
-        <p className="text-sm text-gray-600 mt-1">
-          高效批改试卷，智能统计分析，一键分享成绩报告
-        </p>
-      </div>
-
-      {/* 移动端功能切换下拉菜单 */}
-      <div className="md:hidden bg-white border-b border-gray-200 p-3">
-        <div 
-          className="flex items-center justify-between cursor-pointer"
-          onClick={() => {
-            // 创建一个新的状态来控制切换菜单的显示
-            setShowFunctionSelector && setShowFunctionSelector(!showFunctionSelector);
-          }}
-        >
-          <div className="font-medium">
+      {/* 顶部导航栏 */}
+      <div className="bg-gradient-to-r from-blue-100 to-blue-200">
+        {/* 移动端顶部导航 */}
+        <div className="md:hidden flex items-center justify-between p-4 border-b border-blue-200">
+          <div className="flex items-center">
+            <Link href="/ai-applications" className="mr-3">
+              <ArrowLeft className="h-6 w-6 text-blue-600" />
+            </Link>
+            <h1 className="text-lg font-medium">阅卷助手</h1>
+          </div>
+          <button 
+            className="text-blue-600"
+            onClick={() => setShowFunctionSelector(!showFunctionSelector)}
+          >
             {activeTab === 'paper' && '试卷批改'}
             {activeTab === 'stats' && '成绩统计'}
             {activeTab === 'favorites' && '收藏试卷'}
-          </div>
-          <ChevronDown size={18} className="text-gray-500" />
+            <ChevronDown className="inline-block ml-1 h-4 w-4" />
+          </button>
         </div>
-        
-        {showFunctionSelector && (
-          <div className="bg-white border border-gray-200 rounded-md mt-2 shadow-md absolute left-3 right-3 z-30">
+
+        {/* 桌面端顶部信息 */}
+        <div className="hidden md:block p-4">
+          <div className="flex items-center">
+            <Link href="/ai-applications" className="mr-3">
+              <ArrowLeft className="h-6 w-6 text-blue-600" />
+            </Link>
+            <div>
+              <h1 className="text-xl font-bold flex items-center">
+                <FileText className="h-6 w-6 mr-2 text-blue-600" />
+                阅卷助手
+              </h1>
+              <p className="text-sm text-gray-600 mt-1">
+                高效批改试卷，智能统计分析，一键分享成绩报告
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 移动端功能切换菜单 */}
+      {showFunctionSelector && (
+        <div className="md:hidden fixed inset-0 z-50">
+          <div className="absolute inset-0 bg-black bg-opacity-20" onClick={() => setShowFunctionSelector(false)} />
+          <div className="absolute top-16 left-4 right-4 bg-white rounded-lg shadow-xl">
             <div 
-              className={`p-3 border-b border-gray-100 ${activeTab === 'paper' ? 'bg-blue-50 text-blue-600' : ''}`}
+              className={`p-4 border-b border-gray-100 flex items-center ${activeTab === 'paper' ? 'text-blue-600' : ''}`}
               onClick={() => {
                 setActiveTab('paper');
                 setShowFunctionSelector(false);
               }}
             >
+              <FileText className={`h-5 w-5 mr-3 ${activeTab === 'paper' ? 'text-blue-600' : 'text-gray-400'}`} />
               试卷批改
             </div>
             <div 
-              className={`p-3 border-b border-gray-100 ${activeTab === 'stats' ? 'bg-blue-50 text-blue-600' : ''}`}
+              className={`p-4 border-b border-gray-100 flex items-center ${activeTab === 'stats' ? 'text-blue-600' : ''}`}
               onClick={() => {
                 setActiveTab('stats');
                 setShowFunctionSelector(false);
               }}
             >
+              <BarChart2 className={`h-5 w-5 mr-3 ${activeTab === 'stats' ? 'text-blue-600' : 'text-gray-400'}`} />
               成绩统计
             </div>
             <div 
-              className={`p-3 ${activeTab === 'favorites' ? 'bg-blue-50 text-blue-600' : ''}`}
+              className={`p-4 flex items-center ${activeTab === 'favorites' ? 'text-blue-600' : ''}`}
               onClick={() => {
                 setActiveTab('favorites');
                 setShowFunctionSelector(false);
               }}
             >
+              <Bookmark className={`h-5 w-5 mr-3 ${activeTab === 'favorites' ? 'text-blue-600' : 'text-gray-400'}`} />
               收藏试卷
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* 批改班级区域 */}
       <div className="bg-white border-b border-gray-200 p-3">
@@ -241,98 +260,64 @@ export default function ExamGrading() {
         )}
       </div>
 
-      {/* 移动端显示的底部导航栏 */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around items-center p-2 z-10 md:hidden">
-        <button 
-          className="flex flex-col items-center justify-center p-2" 
-          onClick={() => {setSidebarOpen(!sidebarOpen); setToolbarOpen(false);}}
-        >
-          <Users size={20} className={`${sidebarOpen ? 'text-blue-500' : 'text-gray-600'}`} />
-          <span className="text-xs mt-1">学生</span>
-        </button>
-        <button 
-          className="flex flex-col items-center justify-center p-2"
-          onClick={() => setActiveTab('paper')}
-        >
-          <FileText size={20} className={`${activeTab === 'paper' ? 'text-blue-500' : 'text-gray-600'}`} />
-          <span className="text-xs mt-1">批改</span>
-        </button>
-        <button 
-          className="flex flex-col items-center justify-center p-2"
-          onClick={() => setActiveTab('stats')}
-        >
-          <BarChart2 size={20} className={`${activeTab === 'stats' ? 'text-blue-500' : 'text-gray-600'}`} />
-          <span className="text-xs mt-1">统计</span>
-        </button>
-        <button 
-          className="flex flex-col items-center justify-center p-2"
-          onClick={() => setActiveTab('favorites')}
-        >
-          <Bookmark size={20} className={`${activeTab === 'favorites' ? 'text-blue-500' : 'text-gray-600'}`} />
-          <span className="text-xs mt-1">收藏</span>
-        </button>
-        <button 
-          className="flex flex-col items-center justify-center p-2"
-          onClick={() => {setToolbarOpen(!toolbarOpen); setSidebarOpen(false);}}
-        >
-          <PenTool size={20} className={`${toolbarOpen ? 'text-blue-500' : 'text-gray-600'}`} />
-          <span className="text-xs mt-1">工具</span>
-        </button>
-      </div>
-
       {/* 主体内容区域 */}
       <div className="flex min-h-screen bg-gray-50 md:pb-0 pb-16">
         {/* 左侧边栏：学生列表 */}
-        <div className={`${sidebarOpen ? 'fixed inset-0 z-20 block' : 'hidden'} md:block md:relative md:z-auto md:w-64 md:inset-auto bg-white border-r border-gray-200`}>
-          <div className="md:hidden absolute right-3 top-3">
-            <button onClick={() => setSidebarOpen(false)} className="p-1 rounded-full bg-gray-100">
-              <X size={18} />
-            </button>
-          </div>
-          <div className="p-3 border-b border-gray-200">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="搜索学生"
-                className="w-full pl-8 pr-4 py-1.5 text-sm border border-gray-200 rounded-md"
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-              />
-              <Search className="absolute left-2 top-2 text-gray-400 w-4 h-4" />
+        <div className={`${sidebarOpen ? 'fixed inset-0 z-40' : 'hidden'} md:block md:relative md:z-auto md:w-64 md:inset-auto`}>
+          {sidebarOpen && (
+            <div className="absolute inset-0 bg-black bg-opacity-20 md:hidden" onClick={() => setSidebarOpen(false)} />
+          )}
+          <div className="relative h-full bg-white border-r border-gray-200">
+            <div className="md:hidden absolute right-3 top-3">
+              <button onClick={() => setSidebarOpen(false)} className="p-1 rounded-full bg-gray-100">
+                <X size={18} />
+              </button>
             </div>
-          </div>
-          
-          <div className="p-2 border-b border-gray-200 flex justify-between items-center">
-            <div className="text-sm font-medium">学生列表</div>
-            <div className="text-xs text-gray-500">{filteredStudents.length}人</div>
-          </div>
-          
-          <div className="overflow-y-auto max-h-[calc(100vh-210px)] md:max-h-[calc(100vh-210px)] max-h-[calc(100vh-150px)]">
-            {filteredStudents.map(student => (
-              <div 
-                key={student.id}
-                className={`px-3 py-2 border-b border-gray-100 student-list-item flex justify-between items-center ${
-                  selectedStudent === student.id ? 'selected' : ''
-                }`}
-                onClick={() => {
-                  setSelectedStudent(student.id);
-                  setSidebarOpen(false);
-                }}
-              >
-                <div>
-                  <div className="text-sm font-medium">{student.name}</div>
-                  <div className="text-xs text-gray-500">学号: {student.id}</div>
-                </div>
-                {studentScores[student.id] !== undefined && (
-                  <div className={`text-sm font-bold ${
-                    studentScores[student.id] >= 90 ? 'text-green-500' : 
-                    studentScores[student.id] >= 60 ? 'text-orange-500' : 'text-red-500'
-                  }`}>
-                    {studentScores[student.id]}分
-                  </div>
-                )}
+            <div className="p-3 border-b border-gray-200">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="搜索学生"
+                  className="w-full pl-8 pr-4 py-1.5 text-sm border border-gray-200 rounded-md"
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                />
+                <Search className="absolute left-2 top-2 text-gray-400 w-4 h-4" />
               </div>
-            ))}
+            </div>
+            
+            <div className="p-2 border-b border-gray-200 flex justify-between items-center">
+              <div className="text-sm font-medium">学生列表</div>
+              <div className="text-xs text-gray-500">{filteredStudents.length}人</div>
+            </div>
+            
+            <div className="overflow-y-auto max-h-[calc(100vh-210px)] md:max-h-[calc(100vh-210px)] max-h-[calc(100vh-150px)]">
+              {filteredStudents.map(student => (
+                <div 
+                  key={student.id}
+                  className={`px-3 py-2 border-b border-gray-100 student-list-item flex justify-between items-center ${
+                    selectedStudent === student.id ? 'selected' : ''
+                  }`}
+                  onClick={() => {
+                    setSelectedStudent(student.id);
+                    setSidebarOpen(false);
+                  }}
+                >
+                  <div>
+                    <div className="text-sm font-medium">{student.name}</div>
+                    <div className="text-xs text-gray-500">学号: {student.id}</div>
+                  </div>
+                  {studentScores[student.id] !== undefined && (
+                    <div className={`text-sm font-bold ${
+                      studentScores[student.id] >= 90 ? 'text-green-500' : 
+                      studentScores[student.id] >= 60 ? 'text-orange-500' : 'text-red-500'
+                    }`}>
+                      {studentScores[student.id]}分
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
         
@@ -653,140 +638,185 @@ export default function ExamGrading() {
             
             {/* 右侧工具栏 */}
             {activeTab === 'paper' && (
-              <div className={`${toolbarOpen ? 'fixed inset-0 z-20 block' : 'hidden'} md:block md:relative md:z-auto md:w-56 bg-white border-l border-gray-200 p-3`}>
-                <div className="md:hidden absolute right-3 top-3">
-                  <button onClick={() => setToolbarOpen(false)} className="p-1 rounded-full bg-gray-100">
-                    <X size={18} />
-                  </button>
-                </div>
-                
-                <div className="mb-5">
-                  <button 
-                    className="w-full flex items-center justify-center px-3 py-2 text-sm border rounded-md mb-2 bg-blue-500 text-white"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    <Camera size={16} className="mr-1" />
-                    <span>上传试卷</span>
-                    <input 
-                      type="file" 
-                      ref={fileInputRef} 
-                      className="hidden" 
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                    />
-                  </button>
-                </div>
+              <div className={`${toolbarOpen ? 'fixed inset-0 z-40' : 'hidden'} md:block md:relative md:z-auto md:w-56`}>
+                {toolbarOpen && (
+                  <div className="absolute inset-0 bg-black bg-opacity-20 md:hidden" onClick={() => setToolbarOpen(false)} />
+                )}
+                <div className="relative h-full bg-white border-l border-gray-200 p-3">
+                  <div className="md:hidden absolute right-3 top-3">
+                    <button onClick={() => setToolbarOpen(false)} className="p-1 rounded-full bg-gray-100">
+                      <X size={18} />
+                    </button>
+                  </div>
+                  <div className="mb-5">
+                    <button 
+                      className="w-full flex items-center justify-center px-3 py-2 text-sm border rounded-md mb-2 bg-blue-500 text-white"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <Camera size={16} className="mr-1" />
+                      <span>上传试卷</span>
+                      <input 
+                        type="file" 
+                        ref={fileInputRef} 
+                        className="hidden" 
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                      />
+                    </button>
+                  </div>
 
-                <div className="border-t border-gray-200 pt-3 mb-3">
-                  <div className="text-xs text-gray-500 mb-2">批改工具</div>
-                  <div className="space-y-2">
-                    <button 
-                      className={`w-full flex items-center px-3 py-2 text-sm border rounded-md annotation-tool ${activeTool === 'correct' ? 'active' : ''}`}
-                      onClick={() => {
-                        setActiveTool(activeTool === 'correct' ? null : 'correct');
-                        setToolbarOpen(false);
-                      }}
-                    >
-                      <Check size={16} className="mr-2 text-green-500" />
-                      <span>正确</span>
-                    </button>
-                    
-                    <button 
-                      className={`w-full flex items-center px-3 py-2 text-sm border rounded-md annotation-tool ${activeTool === 'wrong' ? 'active' : ''}`}
-                      onClick={() => {
-                        setActiveTool(activeTool === 'wrong' ? null : 'wrong');
-                        setToolbarOpen(false);
-                      }}
-                    >
-                      <X size={16} className="mr-2 text-red-500" />
-                      <span>错误</span>
-                    </button>
-                    
-                    <button 
-                      className={`w-full flex items-center px-3 py-2 text-sm border rounded-md annotation-tool ${activeTool === 'comment' ? 'active' : ''}`}
-                      onClick={() => {
-                        setActiveTool(activeTool === 'comment' ? null : 'comment');
-                        setToolbarOpen(false);
-                      }}
-                    >
-                      <MessageSquare size={16} className="mr-2 text-blue-500" />
-                      <span>评论</span>
-                    </button>
-                  </div>
-                </div>
-                
-                <div className="border-t border-gray-200 pt-3 mb-3">
-                  <div className="text-xs text-gray-500 mb-2">视图调整</div>
-                  <div className="space-y-2">
-                    <button 
-                      className="w-full flex items-center px-3 py-2 text-sm border rounded-md annotation-tool"
-                      onClick={() => {
-                        setZoomLevel(prev => Math.min(prev + 0.1, 2));
-                        setToolbarOpen(false);
-                      }}
-                    >
-                      <ZoomIn size={16} className="mr-2" />
-                      <span>放大</span>
-                    </button>
-                    
-                    <button 
-                      className="w-full flex items-center px-3 py-2 text-sm border rounded-md annotation-tool"
-                      onClick={() => {
-                        setZoomLevel(prev => Math.max(prev - 0.1, 0.5));
-                        setToolbarOpen(false);
-                      }}
-                    >
-                      <ZoomOut size={16} className="mr-2" />
-                      <span>缩小</span>
-                    </button>
-                    
-                    <button 
-                      className="w-full flex items-center px-3 py-2 text-sm border rounded-md annotation-tool"
-                      onClick={() => {
-                        setAnnotations([]);
-                        setToolbarOpen(false);
-                      }}
-                    >
-                      <RotateCcw size={16} className="mr-2" />
-                      <span>清除标记</span>
-                    </button>
-                  </div>
-                </div>
-                
-                <div className="border-t border-gray-200 pt-3">
-                  <div className="text-xs text-gray-500 mb-2">操作</div>
-                  <div className="space-y-2">
-                    <button 
-                      className="w-full flex items-center px-3 py-2 text-sm border rounded-md annotation-tool"
-                      onClick={() => {
-                        if (selectedStudent) {
-                          alert(`已收藏${STUDENTS_DATA.find(s => s.id === selectedStudent)?.name}的试卷`);
+                  <div className="border-t border-gray-200 pt-3 mb-3">
+                    <div className="text-xs text-gray-500 mb-2">批改工具</div>
+                    <div className="space-y-2">
+                      <button 
+                        className={`w-full flex items-center px-3 py-2 text-sm border rounded-md annotation-tool ${activeTool === 'correct' ? 'active' : ''}`}
+                        onClick={() => {
+                          setActiveTool(activeTool === 'correct' ? null : 'correct');
                           setToolbarOpen(false);
-                        } else {
-                          alert("请先选择学生");
-                        }
-                      }}
-                    >
-                      <Bookmark size={16} className="mr-2" />
-                      <span>收藏</span>
-                    </button>
-                    
-                    <button 
-                      className="w-full flex items-center px-3 py-2 text-sm border rounded-md annotation-tool"
-                      onClick={() => {
-                        handleShare();
-                        setToolbarOpen(false);
-                      }}
-                    >
-                      <Share2 size={16} className="mr-2" />
-                      <span>分享</span>
-                    </button>
+                        }}
+                      >
+                        <Check size={16} className="mr-2 text-green-500" />
+                        <span>正确</span>
+                      </button>
+                      
+                      <button 
+                        className={`w-full flex items-center px-3 py-2 text-sm border rounded-md annotation-tool ${activeTool === 'wrong' ? 'active' : ''}`}
+                        onClick={() => {
+                          setActiveTool(activeTool === 'wrong' ? null : 'wrong');
+                          setToolbarOpen(false);
+                        }}
+                      >
+                        <X size={16} className="mr-2 text-red-500" />
+                        <span>错误</span>
+                      </button>
+                      
+                      <button 
+                        className={`w-full flex items-center px-3 py-2 text-sm border rounded-md annotation-tool ${activeTool === 'comment' ? 'active' : ''}`}
+                        onClick={() => {
+                          setActiveTool(activeTool === 'comment' ? null : 'comment');
+                          setToolbarOpen(false);
+                        }}
+                      >
+                        <MessageSquare size={16} className="mr-2 text-blue-500" />
+                        <span>评论</span>
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className="border-t border-gray-200 pt-3 mb-3">
+                    <div className="text-xs text-gray-500 mb-2">视图调整</div>
+                    <div className="space-y-2">
+                      <button 
+                        className="w-full flex items-center px-3 py-2 text-sm border rounded-md annotation-tool"
+                        onClick={() => {
+                          setZoomLevel(prev => Math.min(prev + 0.1, 2));
+                          setToolbarOpen(false);
+                        }}
+                      >
+                        <ZoomIn size={16} className="mr-2" />
+                        <span>放大</span>
+                      </button>
+                      
+                      <button 
+                        className="w-full flex items-center px-3 py-2 text-sm border rounded-md annotation-tool"
+                        onClick={() => {
+                          setZoomLevel(prev => Math.max(prev - 0.1, 0.5));
+                          setToolbarOpen(false);
+                        }}
+                      >
+                        <ZoomOut size={16} className="mr-2" />
+                        <span>缩小</span>
+                      </button>
+                      
+                      <button 
+                        className="w-full flex items-center px-3 py-2 text-sm border rounded-md annotation-tool"
+                        onClick={() => {
+                          setAnnotations([]);
+                          setToolbarOpen(false);
+                        }}
+                      >
+                        <RotateCcw size={16} className="mr-2" />
+                        <span>清除标记</span>
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className="border-t border-gray-200 pt-3">
+                    <div className="text-xs text-gray-500 mb-2">操作</div>
+                    <div className="space-y-2">
+                      <button 
+                        className="w-full flex items-center px-3 py-2 text-sm border rounded-md annotation-tool"
+                        onClick={() => {
+                          if (selectedStudent) {
+                            alert(`已收藏${STUDENTS_DATA.find(s => s.id === selectedStudent)?.name}的试卷`);
+                            setToolbarOpen(false);
+                          } else {
+                            alert("请先选择学生");
+                          }
+                        }}
+                      >
+                        <Bookmark size={16} className="mr-2" />
+                        <span>收藏</span>
+                      </button>
+                      
+                      <button 
+                        className="w-full flex items-center px-3 py-2 text-sm border rounded-md annotation-tool"
+                        onClick={() => {
+                          handleShare();
+                          setToolbarOpen(false);
+                        }}
+                      >
+                        <Share2 size={16} className="mr-2" />
+                        <span>分享</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
             )}
           </div>
         </div>
+      </div>
+
+      {/* 移动端底部导航栏 */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around items-center p-2 z-30 md:hidden">
+        <button 
+          className="flex flex-col items-center justify-center p-2" 
+          onClick={() => {setSidebarOpen(!sidebarOpen); setToolbarOpen(false);}}
+        >
+          <Users size={20} className={`${sidebarOpen ? 'text-blue-500' : 'text-gray-600'}`} />
+          <span className="text-xs mt-1">学生</span>
+        </button>
+        <button 
+          className="flex flex-col items-center justify-center p-2"
+          onClick={() => setActiveTab('paper')}
+        >
+          <FileText size={20} className={`${activeTab === 'paper' ? 'text-blue-500' : 'text-gray-600'}`} />
+          <span className="text-xs mt-1">批改</span>
+        </button>
+        <button 
+          className="flex flex-col items-center justify-center p-2"
+          onClick={() => setActiveTab('stats')}
+        >
+          <BarChart2 size={20} className={`${activeTab === 'stats' ? 'text-blue-500' : 'text-gray-600'}`} />
+          <span className="text-xs mt-1">统计</span>
+        </button>
+        <button 
+          className="flex flex-col items-center justify-center p-2"
+          onClick={() => setActiveTab('favorites')}
+        >
+          <Bookmark size={20} className={`${activeTab === 'favorites' ? 'text-blue-500' : 'text-gray-600'}`} />
+          <span className="text-xs mt-1">收藏</span>
+        </button>
+        {activeTab === 'paper' && (
+          <button 
+            className="flex flex-col items-center justify-center p-2"
+            onClick={() => {setToolbarOpen(!toolbarOpen); setSidebarOpen(false);}}
+          >
+            <PenTool size={20} className={`${toolbarOpen ? 'text-blue-500' : 'text-gray-600'}`} />
+            <span className="text-xs mt-1">工具</span>
+          </button>
+        )}
       </div>
     </AppLayout>
   )

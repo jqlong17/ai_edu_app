@@ -35,41 +35,33 @@
     filter: brightness(1.1);
   }
   
-  /* 移动端模态遮罩背景 */
-  .fixed.inset-0.z-20 {
-    background-color: rgba(0, 0, 0, 0.4);
+  /* 移动端遮罩和弹出层样式 */
+  .fixed.inset-0.z-40,
+  .fixed.inset-0.z-50 {
+    animation: fadeIn 0.2s ease-out;
+  }
+  
+  .fixed.inset-0.z-40 .bg-white,
+  .fixed.inset-0.z-50 .bg-white {
+    animation: slideIn 0.3s ease-out;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes slideIn {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
   }
   
   /* 移动端侧边栏和工具栏样式 */
-  .fixed.inset-0.z-20.block > div:first-child {
-    position: absolute;
-    top: 0;
-    right: 0;
-    left: 0;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-  }
-  
-  /* 移动端功能切换菜单样式 */
-  .md\:hidden.bg-white {
-    position: relative;
-  }
-  
-  .md\:hidden.bg-white .absolute {
-    max-height: calc(100vh - 200px);
+  .fixed.inset-0.z-40 .relative.h-full,
+  .fixed.inset-0.z-50 .relative.h-full {
+    height: 100%;
     overflow-y: auto;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    z-index: 50;
-  }
-  
-  .md\:hidden.bg-white .absolute > div {
-    transition: background-color 0.2s;
-    font-size: 15px;
-  }
-  
-  .md\:hidden.bg-white .absolute > div:active {
-    background-color: #e6f7ff;
+    -webkit-overflow-scrolling: touch;
   }
 }
 
@@ -106,16 +98,33 @@
 /* 增加移动端触控区域 */
 @media (max-width: 768px) {
   .student-list-item {
-    padding: 10px 12px;
+    padding: 12px 16px;
   }
   
   button {
-    min-height: 36px;
+    min-height: 44px;
   }
   
   input[type="text"],
   input[type="number"] {
-    min-height: 40px;
+    min-height: 44px;
+    font-size: 16px; /* 防止iOS自动缩放 */
+  }
+  
+  /* 底部导航栏样式 */
+  .fixed.bottom-0 {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  /* 工具栏按钮样式 */
+  .annotation-tool {
+    padding: 12px;
+    margin-bottom: 8px;
+  }
+  
+  /* 确保弹出层不会被底部导航遮挡 */
+  .fixed.inset-0.z-40 .relative.h-full {
+    padding-bottom: 80px;
   }
 }
 
@@ -175,15 +184,26 @@
   .grid-cols-2 {
     grid-template-columns: 1fr;
   }
+  
+  /* 优化小屏幕上的间距 */
+  .p-4 {
+    padding: 12px;
+  }
+  
+  .gap-4 {
+    gap: 12px;
+  }
 }
 
 /* 优化移动端模态框关闭按钮 */
-.fixed.inset-0.z-20 .rounded-full {
-  width: 32px;
-  height: 32px;
+.fixed.inset-0 .rounded-full {
+  width: 36px;
+  height: 36px;
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* 优化移动端的触摸反馈 */
@@ -194,5 +214,10 @@
   
   .paper-card:active {
     transform: scale(0.98);
+  }
+  
+  /* 优化工具栏在移动端的显示 */
+  .annotation-tool:active {
+    background-color: #f0f7ff;
   }
 } 
