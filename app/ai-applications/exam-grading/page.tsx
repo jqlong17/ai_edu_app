@@ -63,6 +63,7 @@ export default function ExamGrading() {
   })
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false)
   const [toolbarOpen, setToolbarOpen] = useState<boolean>(false)
+  const [showFunctionSelector, setShowFunctionSelector] = useState<boolean>(false)
 
   const paperRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -162,6 +163,56 @@ export default function ExamGrading() {
         <p className="text-sm text-gray-600 mt-1">
           高效批改试卷，智能统计分析，一键分享成绩报告
         </p>
+      </div>
+
+      {/* 移动端功能切换下拉菜单 */}
+      <div className="md:hidden bg-white border-b border-gray-200 p-3">
+        <div 
+          className="flex items-center justify-between cursor-pointer"
+          onClick={() => {
+            // 创建一个新的状态来控制切换菜单的显示
+            setShowFunctionSelector && setShowFunctionSelector(!showFunctionSelector);
+          }}
+        >
+          <div className="font-medium">
+            {activeTab === 'paper' && '试卷批改'}
+            {activeTab === 'stats' && '成绩统计'}
+            {activeTab === 'favorites' && '收藏试卷'}
+          </div>
+          <ChevronDown size={18} className="text-gray-500" />
+        </div>
+        
+        {showFunctionSelector && (
+          <div className="bg-white border border-gray-200 rounded-md mt-2 shadow-md absolute left-3 right-3 z-30">
+            <div 
+              className={`p-3 border-b border-gray-100 ${activeTab === 'paper' ? 'bg-blue-50 text-blue-600' : ''}`}
+              onClick={() => {
+                setActiveTab('paper');
+                setShowFunctionSelector(false);
+              }}
+            >
+              试卷批改
+            </div>
+            <div 
+              className={`p-3 border-b border-gray-100 ${activeTab === 'stats' ? 'bg-blue-50 text-blue-600' : ''}`}
+              onClick={() => {
+                setActiveTab('stats');
+                setShowFunctionSelector(false);
+              }}
+            >
+              成绩统计
+            </div>
+            <div 
+              className={`p-3 ${activeTab === 'favorites' ? 'bg-blue-50 text-blue-600' : ''}`}
+              onClick={() => {
+                setActiveTab('favorites');
+                setShowFunctionSelector(false);
+              }}
+            >
+              收藏试卷
+            </div>
+          </div>
+        )}
       </div>
 
       {/* 批改班级区域 */}

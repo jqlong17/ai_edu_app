@@ -50,6 +50,27 @@
     padding: 10px;
     border-bottom: 1px solid #eee;
   }
+  
+  /* 移动端功能切换菜单样式 */
+  .md\:hidden.bg-white {
+    position: relative;
+  }
+  
+  .md\:hidden.bg-white .absolute {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 50;
+  }
+  
+  .md\:hidden.bg-white .absolute > div {
+    transition: background-color 0.2s;
+    font-size: 15px;
+  }
+  
+  .md\:hidden.bg-white .absolute > div:active {
+    background-color: #e6f7ff;
+  }
 }
 
 .annotation-tool {
