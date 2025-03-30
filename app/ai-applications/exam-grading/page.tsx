@@ -61,6 +61,8 @@ export default function ExamGrading() {
   const [studentScores, setStudentScores] = useState<Record<number, number>>({
     1: 98, 2: 76, 3: 85, 4: 62, 5: 91
   })
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false)
+  const [toolbarOpen, setToolbarOpen] = useState<boolean>(false)
 
   const paperRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -167,7 +169,8 @@ export default function ExamGrading() {
         <div className="flex justify-between items-center">
           <div className="flex items-center">
             <span className="text-gray-700 font-medium mr-2">批改班级</span>
-            <span className="text-sm text-gray-500">三年级一班 数学期中考试</span>
+            <span className="text-sm text-gray-500 hidden sm:inline">三年级一班 数学期中考试</span>
+            <span className="text-sm text-gray-500 sm:hidden">三年级一班</span>
           </div>
           <button 
             className="text-xs text-blue-500 flex items-center"
@@ -187,10 +190,54 @@ export default function ExamGrading() {
         )}
       </div>
 
+      {/* 移动端显示的底部导航栏 */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around items-center p-2 z-10 md:hidden">
+        <button 
+          className="flex flex-col items-center justify-center p-2" 
+          onClick={() => {setSidebarOpen(!sidebarOpen); setToolbarOpen(false);}}
+        >
+          <Users size={20} className={`${sidebarOpen ? 'text-blue-500' : 'text-gray-600'}`} />
+          <span className="text-xs mt-1">学生</span>
+        </button>
+        <button 
+          className="flex flex-col items-center justify-center p-2"
+          onClick={() => setActiveTab('paper')}
+        >
+          <FileText size={20} className={`${activeTab === 'paper' ? 'text-blue-500' : 'text-gray-600'}`} />
+          <span className="text-xs mt-1">批改</span>
+        </button>
+        <button 
+          className="flex flex-col items-center justify-center p-2"
+          onClick={() => setActiveTab('stats')}
+        >
+          <BarChart2 size={20} className={`${activeTab === 'stats' ? 'text-blue-500' : 'text-gray-600'}`} />
+          <span className="text-xs mt-1">统计</span>
+        </button>
+        <button 
+          className="flex flex-col items-center justify-center p-2"
+          onClick={() => setActiveTab('favorites')}
+        >
+          <Bookmark size={20} className={`${activeTab === 'favorites' ? 'text-blue-500' : 'text-gray-600'}`} />
+          <span className="text-xs mt-1">收藏</span>
+        </button>
+        <button 
+          className="flex flex-col items-center justify-center p-2"
+          onClick={() => {setToolbarOpen(!toolbarOpen); setSidebarOpen(false);}}
+        >
+          <PenTool size={20} className={`${toolbarOpen ? 'text-blue-500' : 'text-gray-600'}`} />
+          <span className="text-xs mt-1">工具</span>
+        </button>
+      </div>
+
       {/* 主体内容区域 */}
-      <div className="flex min-h-screen bg-gray-50">
+      <div className="flex min-h-screen bg-gray-50 md:pb-0 pb-16">
         {/* 左侧边栏：学生列表 */}
-        <div className="w-64 bg-white border-r border-gray-200">
+        <div className={`${sidebarOpen ? 'fixed inset-0 z-20 block' : 'hidden'} md:block md:relative md:z-auto md:w-64 md:inset-auto bg-white border-r border-gray-200`}>
+          <div className="md:hidden absolute right-3 top-3">
+            <button onClick={() => setSidebarOpen(false)} className="p-1 rounded-full bg-gray-100">
+              <X size={18} />
+            </button>
+          </div>
           <div className="p-3 border-b border-gray-200">
             <div className="relative">
               <input
@@ -209,14 +256,17 @@ export default function ExamGrading() {
             <div className="text-xs text-gray-500">{filteredStudents.length}人</div>
           </div>
           
-          <div className="overflow-y-auto max-h-[calc(100vh-210px)]">
+          <div className="overflow-y-auto max-h-[calc(100vh-210px)] md:max-h-[calc(100vh-210px)] max-h-[calc(100vh-150px)]">
             {filteredStudents.map(student => (
               <div 
                 key={student.id}
                 className={`px-3 py-2 border-b border-gray-100 student-list-item flex justify-between items-center ${
                   selectedStudent === student.id ? 'selected' : ''
                 }`}
-                onClick={() => setSelectedStudent(student.id)}
+                onClick={() => {
+                  setSelectedStudent(student.id);
+                  setSidebarOpen(false);
+                }}
               >
                 <div>
                   <div className="text-sm font-medium">{student.name}</div>
@@ -238,7 +288,7 @@ export default function ExamGrading() {
         {/* 主内容区域 */}
         <div className="flex-1 flex flex-col">
           {/* 标签页导航 */}
-          <div className="bg-white border-b border-gray-200 flex">
+          <div className="bg-white border-b border-gray-200 md:flex hidden">
             <div className="flex-1 flex">
               <button
                 onClick={() => setActiveTab('paper')}
@@ -284,7 +334,7 @@ export default function ExamGrading() {
           
           <div className="flex-1 flex">
             {/* 中间试卷区域 */}
-            <div className="flex-1 p-4">
+            <div className="flex-1 p-2 sm:p-4">
               {/* 试卷批改内容 */}
               {activeTab === 'paper' && (
                 <div className="h-full flex flex-col">
@@ -298,7 +348,7 @@ export default function ExamGrading() {
                         onClick={handleAddAnnotation}
                       >
                         {/* 示例试卷图片 */}
-                        <div className="bg-gray-100 w-full min-h-[800px] flex items-center justify-center">
+                        <div className="bg-gray-100 w-full min-h-[500px] md:min-h-[800px] flex items-center justify-center">
                           <div className="text-gray-400">
                             {studentScores[selectedStudent] !== undefined ? (
                               <div className="text-center">
@@ -340,8 +390,14 @@ export default function ExamGrading() {
                       <div className="flex items-center justify-center h-full text-center text-gray-400">
                         <div>
                           <Users size={48} className="mx-auto mb-3" />
-                          <div className="text-lg mb-1">请先从左侧选择学生</div>
+                          <div className="text-lg mb-1">请选择学生</div>
                           <div className="text-sm">选择学生后可以查看、批改试卷</div>
+                          <button 
+                            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md text-sm md:hidden"
+                            onClick={() => setSidebarOpen(true)}
+                          >
+                            选择学生
+                          </button>
                         </div>
                       </div>
                     )}
@@ -351,7 +407,7 @@ export default function ExamGrading() {
                   {selectedStudent && (
                     <div className="bg-white p-3 rounded-lg shadow-sm mt-3">
                       <div className="flex items-center mb-2">
-                        <div className="font-medium flex-1">
+                        <div className="font-medium flex-1 text-sm sm:text-base">
                           {STUDENTS_DATA.find(s => s.id === selectedStudent)?.name} - 分数评定
                         </div>
                         <button 
@@ -362,19 +418,21 @@ export default function ExamGrading() {
                         </button>
                       </div>
                       
-                      <div className="flex items-center">
-                        <input 
-                          type="number" 
-                          className="w-20 border border-gray-200 rounded-md px-2 py-1 text-sm"
-                          placeholder="分数"
-                          min="0"
-                          max="100"
-                          value={currentScore}
-                          onChange={(e) => setCurrentScore(e.target.value)}
-                        />
-                        <span className="text-sm ml-1">/100分</span>
+                      <div className="flex flex-col sm:flex-row sm:items-center">
+                        <div className="flex items-center mb-2 sm:mb-0">
+                          <input 
+                            type="number" 
+                            className="w-20 border border-gray-200 rounded-md px-2 py-1 text-sm"
+                            placeholder="分数"
+                            min="0"
+                            max="100"
+                            value={currentScore}
+                            onChange={(e) => setCurrentScore(e.target.value)}
+                          />
+                          <span className="text-sm ml-1">/100分</span>
+                        </div>
                         
-                        <div className="ml-4 flex-1">
+                        <div className="sm:ml-4 flex-1">
                           <input 
                             type="text" 
                             className="w-full border border-gray-200 rounded-md px-2 py-1 text-sm"
@@ -391,63 +449,67 @@ export default function ExamGrading() {
               {activeTab === 'stats' && (
                 <div>
                   {/* 整体统计卡片 */}
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                    <div className="bg-white p-4 rounded-lg shadow-sm">
-                      <div className="text-sm text-gray-500 mb-1">总人数</div>
-                      <div className="text-2xl font-bold">{CLASS_STATS.totalStudents}人</div>
+                  <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-6">
+                    <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm">
+                      <div className="text-xs sm:text-sm text-gray-500 mb-1">总人数</div>
+                      <div className="text-xl sm:text-2xl font-bold">{CLASS_STATS.totalStudents}人</div>
                       <div className="text-xs text-gray-400 mt-1">已批改: {CLASS_STATS.completedGrading}人</div>
                     </div>
                     
-                    <div className="bg-white p-4 rounded-lg shadow-sm">
-                      <div className="text-sm text-gray-500 mb-1">平均分</div>
-                      <div className="text-2xl font-bold">{CLASS_STATS.averageScore}分</div>
+                    <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm">
+                      <div className="text-xs sm:text-sm text-gray-500 mb-1">平均分</div>
+                      <div className="text-xl sm:text-2xl font-bold">{CLASS_STATS.averageScore}分</div>
                       <div className="text-xs text-gray-400 mt-1">满分: 100分</div>
                     </div>
                     
-                    <div className="bg-white p-4 rounded-lg shadow-sm">
-                      <div className="text-sm text-gray-500 mb-1">最高/最低分</div>
-                      <div className="text-2xl font-bold">{CLASS_STATS.highestScore}/{CLASS_STATS.lowestScore}</div>
+                    <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm">
+                      <div className="text-xs sm:text-sm text-gray-500 mb-1">最高/最低分</div>
+                      <div className="text-xl sm:text-2xl font-bold">{CLASS_STATS.highestScore}/{CLASS_STATS.lowestScore}</div>
                       <div className="text-xs text-gray-400 mt-1">分差: {CLASS_STATS.highestScore - CLASS_STATS.lowestScore}分</div>
                     </div>
                     
-                    <div className="bg-white p-4 rounded-lg shadow-sm">
-                      <div className="text-sm text-gray-500 mb-1">及格率/优秀率</div>
-                      <div className="text-2xl font-bold">{CLASS_STATS.passingRate}%/{CLASS_STATS.excellentRate}%</div>
+                    <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm">
+                      <div className="text-xs sm:text-sm text-gray-500 mb-1">及格率/优秀率</div>
+                      <div className="text-xl sm:text-2xl font-bold">{CLASS_STATS.passingRate}%/{CLASS_STATS.excellentRate}%</div>
                       <div className="text-xs text-gray-400 mt-1">优秀: ≥90分, 及格: ≥60分</div>
                     </div>
                   </div>
                   
                   {/* 班级成绩详细统计 */}
-                  <div className="mb-6">
-                    <h3 className="text-base font-medium mb-2">班级成绩分布</h3>
-                    <div className="bg-white p-4 rounded-lg shadow-sm">
-                      <div className="text-base font-medium mb-4">分数分布</div>
-                      <div className="text-xs text-gray-500 mb-3">鼠标悬停在柱状图上可查看详细信息</div>
-                      {renderScoreChart()}
+                  <div className="mb-4 sm:mb-6">
+                    <h3 className="text-sm sm:text-base font-medium mb-2">班级成绩分布</h3>
+                    <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm">
+                      <div className="text-sm sm:text-base font-medium mb-3 sm:mb-4">分数分布</div>
+                      <div className="text-xs text-gray-500 mb-2 sm:mb-3">点击柱状图可查看详细信息</div>
+                      <div className="overflow-x-auto pb-2">
+                        <div className="min-w-[450px]">
+                          {renderScoreChart()}
+                        </div>
+                      </div>
                     </div>
                   </div>
                   
                   {/* 智能分析报告 */}
                   <div>
-                    <h3 className="text-base font-medium mb-2">智能分析报告</h3>
-                    <div className="bg-white p-4 rounded-lg shadow-sm">
-                      <div className="bg-blue-50 border-l-4 border-blue-500 p-3 rounded-r-md mb-4">
-                        <div className="text-sm font-medium text-blue-700 mb-1">整体情况</div>
-                        <div className="text-sm text-gray-600">
+                    <h3 className="text-sm sm:text-base font-medium mb-2">智能分析报告</h3>
+                    <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm">
+                      <div className="bg-blue-50 border-l-4 border-blue-500 p-2 sm:p-3 rounded-r-md mb-3 sm:mb-4">
+                        <div className="text-xs sm:text-sm font-medium text-blue-700 mb-1">整体情况</div>
+                        <div className="text-xs sm:text-sm text-gray-600">
                           班级整体成绩良好，平均分{CLASS_STATS.averageScore}分。优秀率{CLASS_STATS.excellentRate}%，及格率{CLASS_STATS.passingRate}%。
                         </div>
                       </div>
                       
-                      <div className="bg-yellow-50 border-l-4 border-yellow-500 p-3 rounded-r-md mb-4">
-                        <div className="text-sm font-medium text-yellow-700 mb-1">问题分析</div>
-                        <div className="text-sm text-gray-600">
+                      <div className="bg-yellow-50 border-l-4 border-yellow-500 p-2 sm:p-3 rounded-r-md mb-3 sm:mb-4">
+                        <div className="text-xs sm:text-sm font-medium text-yellow-700 mb-1">问题分析</div>
+                        <div className="text-xs sm:text-sm text-gray-600">
                           有3名学生得分低于70分，建议重点关注。班级整体在应用题方面的掌握较弱，可加强此方面训练。
                         </div>
                       </div>
                       
-                      <div className="bg-green-50 border-l-4 border-green-500 p-3 rounded-r-md">
-                        <div className="text-sm font-medium text-green-700 mb-1">教学建议</div>
-                        <div className="text-sm text-gray-600">
+                      <div className="bg-green-50 border-l-4 border-green-500 p-2 sm:p-3 rounded-r-md">
+                        <div className="text-xs sm:text-sm font-medium text-green-700 mb-1">教学建议</div>
+                        <div className="text-xs sm:text-sm text-gray-600">
                           1. 针对计算题，学生掌握较好，可以适当增加难度<br/>
                           2. 针对应用题，建议增加训练和讲解<br/>
                           3. 对于分数低于70分的学生，建议进行单独辅导
@@ -466,41 +528,41 @@ export default function ExamGrading() {
               {/* 收藏试卷内容 */}
               {activeTab === 'favorites' && (
                 <div>
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-base font-medium">收藏的试卷</h3>
+                  <div className="flex justify-between items-center mb-3 sm:mb-4">
+                    <h3 className="text-sm sm:text-base font-medium">收藏的试卷</h3>
                     <div className="flex items-center">
-                      <button className="text-sm flex items-center text-gray-500 mr-3">
-                        <ListFilter size={16} className="mr-1" />
-                        <span>筛选</span>
+                      <button className="text-xs sm:text-sm flex items-center text-gray-500 mr-2 sm:mr-3">
+                        <ListFilter size={14} className="mr-1" />
+                        <span className="hidden sm:inline">筛选</span>
                       </button>
-                      <button className="text-sm flex items-center text-blue-500">
-                        <Plus size={16} className="mr-1" />
-                        <span>添加收藏</span>
+                      <button className="text-xs sm:text-sm flex items-center text-blue-500">
+                        <Plus size={14} className="mr-1" />
+                        <span className="hidden sm:inline">添加收藏</span>
                       </button>
                     </div>
                   </div>
                   
                   {/* 收藏试卷列表 */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     {FAVORITE_PAPERS.map(paper => (
-                      <div key={paper.id} className="bg-white p-4 rounded-lg shadow-sm relative paper-card">
+                      <div key={paper.id} className="bg-white p-3 sm:p-4 rounded-lg shadow-sm relative paper-card">
                         <div className="favorite-tag">
                           <Star size={12} className="inline-block mr-1" />
                           <span>收藏</span>
                         </div>
                         
                         <div className="flex items-start">
-                          <div className="bg-gray-100 w-20 h-28 rounded-md flex items-center justify-center mr-3">
-                            <FileText className="text-gray-400" />
+                          <div className="bg-gray-100 w-16 sm:w-20 h-24 sm:h-28 rounded-md flex items-center justify-center mr-2 sm:mr-3">
+                            <FileText className="text-gray-400 w-5 h-5 sm:w-6 sm:h-6" />
                           </div>
                           
                           <div className="flex-1">
                             <div className="flex justify-between items-start">
                               <div>
-                                <div className="font-medium">{paper.studentName}的试卷</div>
+                                <div className="font-medium text-sm sm:text-base">{paper.studentName}的试卷</div>
                                 <div className="text-xs text-gray-500 mt-1">三年级一班 · 数学期中考试</div>
                               </div>
-                              <div className={`text-lg font-bold ${
+                              <div className={`text-base sm:text-lg font-bold ${
                                 paper.score >= 90 ? 'text-green-500' : 
                                 paper.score >= 60 ? 'text-orange-500' : 'text-red-500'
                               }`}>
@@ -508,12 +570,12 @@ export default function ExamGrading() {
                               </div>
                             </div>
                             
-                            <div className="mt-2 text-sm text-gray-600">
+                            <div className="mt-2 text-xs sm:text-sm text-gray-600">
                               <div className="font-medium mb-1">收藏原因:</div>
                               <div>{paper.reason}</div>
                             </div>
                             
-                            <div className="mt-2 flex gap-2">
+                            <div className="mt-2 flex flex-wrap gap-2">
                               <button className="text-xs text-blue-500 border border-blue-500 px-2 py-1 rounded">
                                 查看详情
                               </button>
@@ -527,10 +589,10 @@ export default function ExamGrading() {
                     ))}
                     
                     {/* 空白收藏卡片 */}
-                    <div className="bg-white p-4 rounded-lg shadow-sm border border-dashed border-gray-300 flex items-center justify-center h-[152px] cursor-pointer hover:bg-gray-50">
+                    <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border border-dashed border-gray-300 flex items-center justify-center h-[130px] sm:h-[152px] cursor-pointer hover:bg-gray-50">
                       <div className="text-center text-gray-400">
-                        <Plus size={24} className="mx-auto mb-1" />
-                        <div className="text-sm">添加收藏</div>
+                        <Plus size={20} className="mx-auto mb-1" />
+                        <div className="text-xs sm:text-sm">添加收藏</div>
                       </div>
                     </div>
                   </div>
@@ -540,7 +602,13 @@ export default function ExamGrading() {
             
             {/* 右侧工具栏 */}
             {activeTab === 'paper' && (
-              <div className="w-56 bg-white border-l border-gray-200 p-3">
+              <div className={`${toolbarOpen ? 'fixed inset-0 z-20 block' : 'hidden'} md:block md:relative md:z-auto md:w-56 bg-white border-l border-gray-200 p-3`}>
+                <div className="md:hidden absolute right-3 top-3">
+                  <button onClick={() => setToolbarOpen(false)} className="p-1 rounded-full bg-gray-100">
+                    <X size={18} />
+                  </button>
+                </div>
+                
                 <div className="mb-5">
                   <button 
                     className="w-full flex items-center justify-center px-3 py-2 text-sm border rounded-md mb-2 bg-blue-500 text-white"
@@ -563,7 +631,10 @@ export default function ExamGrading() {
                   <div className="space-y-2">
                     <button 
                       className={`w-full flex items-center px-3 py-2 text-sm border rounded-md annotation-tool ${activeTool === 'correct' ? 'active' : ''}`}
-                      onClick={() => setActiveTool(activeTool === 'correct' ? null : 'correct')}
+                      onClick={() => {
+                        setActiveTool(activeTool === 'correct' ? null : 'correct');
+                        setToolbarOpen(false);
+                      }}
                     >
                       <Check size={16} className="mr-2 text-green-500" />
                       <span>正确</span>
@@ -571,7 +642,10 @@ export default function ExamGrading() {
                     
                     <button 
                       className={`w-full flex items-center px-3 py-2 text-sm border rounded-md annotation-tool ${activeTool === 'wrong' ? 'active' : ''}`}
-                      onClick={() => setActiveTool(activeTool === 'wrong' ? null : 'wrong')}
+                      onClick={() => {
+                        setActiveTool(activeTool === 'wrong' ? null : 'wrong');
+                        setToolbarOpen(false);
+                      }}
                     >
                       <X size={16} className="mr-2 text-red-500" />
                       <span>错误</span>
@@ -579,7 +653,10 @@ export default function ExamGrading() {
                     
                     <button 
                       className={`w-full flex items-center px-3 py-2 text-sm border rounded-md annotation-tool ${activeTool === 'comment' ? 'active' : ''}`}
-                      onClick={() => setActiveTool(activeTool === 'comment' ? null : 'comment')}
+                      onClick={() => {
+                        setActiveTool(activeTool === 'comment' ? null : 'comment');
+                        setToolbarOpen(false);
+                      }}
                     >
                       <MessageSquare size={16} className="mr-2 text-blue-500" />
                       <span>评论</span>
@@ -592,7 +669,10 @@ export default function ExamGrading() {
                   <div className="space-y-2">
                     <button 
                       className="w-full flex items-center px-3 py-2 text-sm border rounded-md annotation-tool"
-                      onClick={() => setZoomLevel(prev => Math.min(prev + 0.1, 2))}
+                      onClick={() => {
+                        setZoomLevel(prev => Math.min(prev + 0.1, 2));
+                        setToolbarOpen(false);
+                      }}
                     >
                       <ZoomIn size={16} className="mr-2" />
                       <span>放大</span>
@@ -600,7 +680,10 @@ export default function ExamGrading() {
                     
                     <button 
                       className="w-full flex items-center px-3 py-2 text-sm border rounded-md annotation-tool"
-                      onClick={() => setZoomLevel(prev => Math.max(prev - 0.1, 0.5))}
+                      onClick={() => {
+                        setZoomLevel(prev => Math.max(prev - 0.1, 0.5));
+                        setToolbarOpen(false);
+                      }}
                     >
                       <ZoomOut size={16} className="mr-2" />
                       <span>缩小</span>
@@ -608,7 +691,10 @@ export default function ExamGrading() {
                     
                     <button 
                       className="w-full flex items-center px-3 py-2 text-sm border rounded-md annotation-tool"
-                      onClick={() => setAnnotations([])}
+                      onClick={() => {
+                        setAnnotations([]);
+                        setToolbarOpen(false);
+                      }}
                     >
                       <RotateCcw size={16} className="mr-2" />
                       <span>清除标记</span>
@@ -623,9 +709,10 @@ export default function ExamGrading() {
                       className="w-full flex items-center px-3 py-2 text-sm border rounded-md annotation-tool"
                       onClick={() => {
                         if (selectedStudent) {
-                          alert(`已收藏${STUDENTS_DATA.find(s => s.id === selectedStudent)?.name}的试卷`)
+                          alert(`已收藏${STUDENTS_DATA.find(s => s.id === selectedStudent)?.name}的试卷`);
+                          setToolbarOpen(false);
                         } else {
-                          alert("请先选择学生")
+                          alert("请先选择学生");
                         }
                       }}
                     >
@@ -635,7 +722,10 @@ export default function ExamGrading() {
                     
                     <button 
                       className="w-full flex items-center px-3 py-2 text-sm border rounded-md annotation-tool"
-                      onClick={handleShare}
+                      onClick={() => {
+                        handleShare();
+                        setToolbarOpen(false);
+                      }}
                     >
                       <Share2 size={16} className="mr-2" />
                       <span>分享</span>

@@ -24,6 +24,34 @@
   filter: brightness(1.1);
 }
 
+/* 移动端增强样式 */
+@media (max-width: 768px) {
+  .score-chart-column {
+    min-width: 20px;
+  }
+  
+  .score-chart-column:active {
+    transform: scaleY(1.05);
+    filter: brightness(1.1);
+  }
+  
+  /* 移动端模态遮罩背景 */
+  .fixed.inset-0.z-20 {
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+  
+  /* 移动端侧边栏和工具栏样式 */
+  .fixed.inset-0.z-20.block > div:first-child {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+  }
+}
+
 .annotation-tool {
   cursor: pointer;
   transition: all 0.15s;
@@ -52,6 +80,22 @@
 .student-list-item.selected {
   background-color: #e6f7ff;
   border-left: 3px solid #1890ff;
+}
+
+/* 增加移动端触控区域 */
+@media (max-width: 768px) {
+  .student-list-item {
+    padding: 10px 12px;
+  }
+  
+  button {
+    min-height: 36px;
+  }
+  
+  input[type="text"],
+  input[type="number"] {
+    min-height: 40px;
+  }
 }
 
 .zoom-controls {
@@ -91,4 +135,43 @@
   border-radius: 0 0 0 8px;
   font-size: 12px;
   z-index: 5;
+}
+
+/* 移动端底部导航栏样式 */
+.fixed.bottom-0.left-0.right-0 {
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* 确保移动端滚动平滑 */
+.overflow-x-auto,
+.overflow-y-auto {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* 确保响应式布局在各种屏幕上正确显示 */
+@media (max-width: 480px) {
+  .grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 优化移动端模态框关闭按钮 */
+.fixed.inset-0.z-20 .rounded-full {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 优化移动端的触摸反馈 */
+@media (max-width: 768px) {
+  button:active {
+    opacity: 0.7;
+  }
+  
+  .paper-card:active {
+    transform: scale(0.98);
+  }
 } 
