@@ -157,111 +157,96 @@ export default function ExamGrading() {
     <AppLayout>
       {/* 顶部导航栏 */}
       <div className="bg-gradient-to-r from-blue-100 to-blue-200">
-        {/* 移动端顶部导航 */}
-        <div className="md:hidden flex items-center justify-between p-4 border-b border-blue-200">
+        {/* 顶部导航 */}
+        <div className="flex items-center justify-between p-4 border-b border-blue-200">
           <div className="flex items-center">
-            <Link href="/ai-applications" className="mr-3">
-              <ArrowLeft className="h-6 w-6 text-blue-600" />
-            </Link>
-            <h1 className="text-lg font-medium">阅卷助手</h1>
-          </div>
-          <button 
-            className="text-blue-600"
-            onClick={() => setShowFunctionSelector(!showFunctionSelector)}
-          >
-            {activeTab === 'paper' && '试卷批改'}
-            {activeTab === 'stats' && '成绩统计'}
-            {activeTab === 'favorites' && '收藏试卷'}
-            <ChevronDown className="inline-block ml-1 h-4 w-4" />
-          </button>
-        </div>
-
-        {/* 桌面端顶部信息 */}
-        <div className="hidden md:block p-4">
-          <div className="flex items-center">
-            <Link href="/ai-applications" className="mr-3">
+            <Link href="/" className="mr-3">
               <ArrowLeft className="h-6 w-6 text-blue-600" />
             </Link>
             <div>
-              <h1 className="text-xl font-bold flex items-center">
-                <FileText className="h-6 w-6 mr-2 text-blue-600" />
-                阅卷助手
-              </h1>
-              <p className="text-sm text-gray-600 mt-1">
-                高效批改试卷，智能统计分析，一键分享成绩报告
-              </p>
+              <h1 className="text-lg font-medium">阅卷助手</h1>
+              <p className="text-sm text-gray-600 mt-1">高效批改试卷，智能统计分析</p>
             </div>
+          </div>
+        </div>
+
+        {/* 功能切换标签页 */}
+        <div className="bg-white border-b border-gray-200 flex">
+          <div className="flex-1 flex">
+            <button
+              onClick={() => setActiveTab('paper')}
+              className={`px-4 py-3 text-sm font-medium relative ${
+                activeTab === 'paper' 
+                  ? 'text-blue-500' 
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <div className="flex items-center">
+                <FileText className="w-4 h-4 mr-1.5" />
+                试卷批改
+              </div>
+              {activeTab === 'paper' && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500"></div>
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab('stats')}
+              className={`px-4 py-3 text-sm font-medium relative ${
+                activeTab === 'stats' 
+                  ? 'text-blue-500' 
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <div className="flex items-center">
+                <BarChart2 className="w-4 h-4 mr-1.5" />
+                成绩统计
+              </div>
+              {activeTab === 'stats' && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500"></div>
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab('favorites')}
+              className={`px-4 py-3 text-sm font-medium relative ${
+                activeTab === 'favorites' 
+                  ? 'text-blue-500' 
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <div className="flex items-center">
+                <Bookmark className="w-4 h-4 mr-1.5" />
+                收藏试卷
+              </div>
+              {activeTab === 'favorites' && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500"></div>
+              )}
+            </button>
           </div>
         </div>
       </div>
 
-      {/* 移动端功能切换菜单 */}
-      {showFunctionSelector && (
-        <div className="md:hidden fixed inset-0 z-50">
-          <div className="absolute inset-0 bg-black bg-opacity-20" onClick={() => setShowFunctionSelector(false)} />
-          <div className="absolute top-16 left-4 right-4 bg-white rounded-lg shadow-xl">
-            <div 
-              className={`p-4 border-b border-gray-100 flex items-center ${activeTab === 'paper' ? 'text-blue-600' : ''}`}
-              onClick={() => {
-                setActiveTab('paper');
-                setShowFunctionSelector(false);
-              }}
-            >
-              <FileText className={`h-5 w-5 mr-3 ${activeTab === 'paper' ? 'text-blue-600' : 'text-gray-400'}`} />
-              试卷批改
-            </div>
-            <div 
-              className={`p-4 border-b border-gray-100 flex items-center ${activeTab === 'stats' ? 'text-blue-600' : ''}`}
-              onClick={() => {
-                setActiveTab('stats');
-                setShowFunctionSelector(false);
-              }}
-            >
-              <BarChart2 className={`h-5 w-5 mr-3 ${activeTab === 'stats' ? 'text-blue-600' : 'text-gray-400'}`} />
-              成绩统计
-            </div>
-            <div 
-              className={`p-4 flex items-center ${activeTab === 'favorites' ? 'text-blue-600' : ''}`}
-              onClick={() => {
-                setActiveTab('favorites');
-                setShowFunctionSelector(false);
-              }}
-            >
-              <Bookmark className={`h-5 w-5 mr-3 ${activeTab === 'favorites' ? 'text-blue-600' : 'text-gray-400'}`} />
-              收藏试卷
-            </div>
-          </div>
+      {/* 批改工具栏 - 只在试卷批改选项卡下显示 */}
+      {activeTab === 'paper' && (
+        <div className="bg-gray-50 border-b border-gray-200 flex py-1 md:hidden">
+          <button 
+            className={`flex items-center px-3 py-2 text-sm font-medium flex-1 ${sidebarOpen ? 'text-blue-500' : 'text-gray-600'}`}
+            onClick={() => {setSidebarOpen(!sidebarOpen); setToolbarOpen(false);}}
+          >
+            <Users size={16} className="mr-1.5" />
+            学生
+          </button>
+          <button 
+            className={`flex items-center px-3 py-2 text-sm font-medium flex-1 ${toolbarOpen ? 'text-blue-500' : 'text-gray-600'}`}
+            onClick={() => {setToolbarOpen(!toolbarOpen); setSidebarOpen(false);}}
+          >
+            <PenTool size={16} className="mr-1.5" />
+            工具
+          </button>
         </div>
       )}
 
-      {/* 批改班级区域 */}
-      <div className="bg-white border-b border-gray-200 p-3">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center">
-            <span className="text-gray-700 font-medium mr-2">批改班级</span>
-            <span className="text-sm text-gray-500 hidden sm:inline">三年级一班 数学期中考试</span>
-            <span className="text-sm text-gray-500 sm:hidden">三年级一班</span>
-          </div>
-          <button 
-            className="text-xs text-blue-500 flex items-center"
-            onClick={() => setShowClassSelector(!showClassSelector)}
-          >
-            切换班级
-            {showClassSelector ? <ChevronUp size={14} className="ml-1" /> : <ChevronDown size={14} className="ml-1" />}
-          </button>
-        </div>
-        
-        {showClassSelector && (
-          <div className="bg-gray-50 p-2 rounded-md mt-2">
-            <div className="text-sm font-medium mb-1">三年级一班</div>
-            <div className="text-sm text-gray-500">三年级二班</div>
-            <div className="text-sm text-gray-500">三年级三班</div>
-          </div>
-        )}
-      </div>
-
       {/* 主体内容区域 */}
-      <div className="flex min-h-screen bg-gray-50 md:pb-0 pb-16">
+      <div className="flex min-h-screen bg-gray-50 md:pb-0">
         {/* 左侧边栏：学生列表 */}
         <div className={`${sidebarOpen ? 'fixed inset-0 z-40' : 'hidden'} md:block md:relative md:z-auto md:w-64 md:inset-auto`}>
           {sidebarOpen && (
@@ -323,51 +308,6 @@ export default function ExamGrading() {
         
         {/* 主内容区域 */}
         <div className="flex-1 flex flex-col">
-          {/* 标签页导航 */}
-          <div className="bg-white border-b border-gray-200 md:flex hidden">
-            <div className="flex-1 flex">
-              <button
-                onClick={() => setActiveTab('paper')}
-                className={`px-4 py-3 text-sm font-medium relative ${
-                  activeTab === 'paper' 
-                    ? 'text-blue-500' 
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                试卷批改
-                {activeTab === 'paper' && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500"></div>
-                )}
-              </button>
-              <button
-                onClick={() => setActiveTab('stats')}
-                className={`px-4 py-3 text-sm font-medium relative ${
-                  activeTab === 'stats' 
-                    ? 'text-blue-500' 
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                成绩统计
-                {activeTab === 'stats' && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500"></div>
-                )}
-              </button>
-              <button
-                onClick={() => setActiveTab('favorites')}
-                className={`px-4 py-3 text-sm font-medium relative ${
-                  activeTab === 'favorites' 
-                    ? 'text-blue-500' 
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                收藏试卷
-                {activeTab === 'favorites' && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500"></div>
-                )}
-              </button>
-            </div>
-          </div>
-          
           <div className="flex-1 flex">
             {/* 中间试卷区域 */}
             <div className="flex-1 p-2 sm:p-4">
@@ -776,47 +716,6 @@ export default function ExamGrading() {
             )}
           </div>
         </div>
-      </div>
-
-      {/* 移动端底部导航栏 */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around items-center p-2 z-30 md:hidden">
-        <button 
-          className="flex flex-col items-center justify-center p-2" 
-          onClick={() => {setSidebarOpen(!sidebarOpen); setToolbarOpen(false);}}
-        >
-          <Users size={20} className={`${sidebarOpen ? 'text-blue-500' : 'text-gray-600'}`} />
-          <span className="text-xs mt-1">学生</span>
-        </button>
-        <button 
-          className="flex flex-col items-center justify-center p-2"
-          onClick={() => setActiveTab('paper')}
-        >
-          <FileText size={20} className={`${activeTab === 'paper' ? 'text-blue-500' : 'text-gray-600'}`} />
-          <span className="text-xs mt-1">批改</span>
-        </button>
-        <button 
-          className="flex flex-col items-center justify-center p-2"
-          onClick={() => setActiveTab('stats')}
-        >
-          <BarChart2 size={20} className={`${activeTab === 'stats' ? 'text-blue-500' : 'text-gray-600'}`} />
-          <span className="text-xs mt-1">统计</span>
-        </button>
-        <button 
-          className="flex flex-col items-center justify-center p-2"
-          onClick={() => setActiveTab('favorites')}
-        >
-          <Bookmark size={20} className={`${activeTab === 'favorites' ? 'text-blue-500' : 'text-gray-600'}`} />
-          <span className="text-xs mt-1">收藏</span>
-        </button>
-        {activeTab === 'paper' && (
-          <button 
-            className="flex flex-col items-center justify-center p-2"
-            onClick={() => {setToolbarOpen(!toolbarOpen); setSidebarOpen(false);}}
-          >
-            <PenTool size={20} className={`${toolbarOpen ? 'text-blue-500' : 'text-gray-600'}`} />
-            <span className="text-xs mt-1">工具</span>
-          </button>
-        )}
       </div>
     </AppLayout>
   )
