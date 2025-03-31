@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { generateTeachingPlan } from './utils/dify-service'
+import { callDifyAPI } from "@/app/utils/dify-client" // 导入新的客户端API服务
 
 // Dify API测试页面
 export default function TestDify() {
@@ -79,27 +80,18 @@ export default function TestDify() {
         user: "test-user"
       };
       
-      addLog(`直接发送请求到Dify API: ${API_URL}`);
+      addLog(`直接发送请求到Dify API`);
       addLog(`请求参数: ${JSON.stringify(requestBody, null, 2)}`);
       
-      // 发送请求
-      const response = await fetch('/api/dify-direct', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          url: API_URL,
-          apiKey: API_KEY,
-          body: requestBody
-        })
+      // 使用客户端API服务而不是通过服务器端API路由
+      const data = await callDifyAPI({
+        query: requestBody.query,
+        inputs: requestBody.inputs,
+        conversation_id: requestBody.conversation_id,
+        response_mode: "blocking",  // 明确指定为"blocking"类型
+        user: requestBody.user
       });
       
-      if (!response.ok) {
-        throw new Error(`API请求失败: ${response.status} ${response.statusText}`);
-      }
-      
-      const data = await response.json();
       addLog(`收到Dify API响应: ${JSON.stringify(data, null, 2)}`);
       setResult(data);
     } catch (err) {

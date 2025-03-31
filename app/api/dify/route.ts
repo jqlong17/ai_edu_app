@@ -1,11 +1,18 @@
-export const dynamic = 'force-dynamic'; // 强制使用动态模式
+// 注释掉或删除动态导出设置
+// export const dynamic = 'force-dynamic'; 
 
+// ⚠️ 注意：使用静态导出(output: 'export')模式时，API路由不可用
+// ⚠️ 请改用utils/dify-client.ts中的客户端API实现
+
+/*
 import { NextRequest, NextResponse } from 'next/server';
 
 // Dify API配置
 const DIFY_API_URL = "http://dify-qa.3ren.cn/v1";  // 改回HTTP协议
 const DIFY_API_KEY = "app-7FLzUUWylxlHNWks8BwHIeF1";
 
+// 注意：当使用 output: 'export' 时，API路由将不可用
+// 需要将此逻辑移至客户端组件中直接调用外部API
 export async function POST(request: NextRequest) {
   try {
     // 获取请求体（使用动态模式）
@@ -109,4 +116,5 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}
+*/ 
